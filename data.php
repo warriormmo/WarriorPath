@@ -1,167 +1,164 @@
 <?php
-    
-    header("Expires: Mon, 1 Jul 1990 05:00:00 GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-		header("Cache-Control: no-cache, must-revalidate");
-		header("Pragma: no-cache");
-		
-		
-$inputdata =$_POST["inputdata"];
-$hod=$_POST['hod'];
-$myhod=split(",",$inputdata);
-require_once('func.php');
+  require_once('func.php');
 
-$time_start = getmicrotime(); 
+  header("Expires: Mon, 1 Jul 1990 05:00:00 GMT");
+  header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+  header("Cache-Control: no-cache, must-revalidate");
+  header("Pragma: no-cache");
 
-db_open();
-check_auth();//проврка куков
+  $inputdata =$_POST["inputdata"];
+  $hod=$_POST['hod'];
+  $myhod=split(",",$inputdata);
+
+  $time_start = getmicrotime(); 
+
+  db_open();
+  check_auth();//проврка куков
 
   db_query('SELECT * FROM game_user WHERE userid='.AP.$my['userid'].AP.' LIMIT 1;');
   $my = db_fetch();
-  if(empty($my)){goto_error_global('Пользователь не найден в базе!');}
+  if(empty($my)){
+    goto_error_global('Пользователь не найден в базе!');
+  }
   db_query('SELECT * FROM Hend WHERE id='.$my['id'].' ;');
   $hend = db_fetch();
   db_query('SELECT * FROM game_battle WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
   $battle = db_fetch();
-  if (!$battle){echo 'hod='.$my['Hod'];die;}//если зашли в игру а бой уже закончен
-//чтение из баз значений
- 
-  if($battle['user1']==$my['id']){ $enemy['id']=$battle['user2'] ; }
-  if($battle['user2']==$my['id']){ $enemy['id']=$battle['user1'] ; }
+  if (!$battle){
+    echo 'hod='.$my['Hod'];die;
+  }//если зашли в игру а бой уже закончен
 
-  
+  //чтение из баз значений
+
+  if($battle['user1']==$my['id']){
+    $enemy['id']=$battle['user2'];
+  }
+  if($battle['user2']==$my['id']){
+    $enemy['id']=$battle['user1'];
+  }
+
   db_query('SELECT * FROM game_user WHERE id='.$enemy['id'].' LIMIT 1;');
   $enemy = db_fetch();
-  
+
   //выкинем игрока кто задерживает игру!!!! 4 минуты и нафиг на любом из ходов..
-  if ((time()-($enemy['lasttime'])>240)&(($my['Hod']==2)||($my['Hod']==3)||($my['Hod']==7)||($my['Hod']==9)||($my['Hod']==15)||($my['Hod']==16)||($my['Hod']==14)||($my['Hod']==13)))
-  { $my['Hod']=21;
-     db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
-	}
+  if ((time()-($enemy['lasttime'])>240)&(($my['Hod']==2)||($my['Hod']==3)||($my['Hod']==7)||($my['Hod']==9)||($my['Hod']==15)||($my['Hod']==16)||($my['Hod']==14)||($my['Hod']==13))){
+    $my['Hod']=21;
+    db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$enemy['id'].' LIMIT 1;');
+    //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
+    db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
+  }
   // движение
-  if ($hod==4)
-  {
-  if ($battle['dist']==1)
-    {
+  if ($hod==4){
+    if ($battle['dist']==1){
       db_query('UPDATE game_battle SET `dist`=2 WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
       $my['moddeystvie']--;
       db_query('UPDATE game_user SET `moddeystvie`='.$my['moddeystvie'].' WHERE id='.$my['id'].' LIMIT 1;');
     }
-   if ($battle['dist']==0)
-    {
+    if ($battle['dist']==0){
       db_query('UPDATE game_battle SET `dist`=1 WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
       $my['moddeystvie']--;
       db_query('UPDATE game_user SET `moddeystvie`='.$my['moddeystvie'].' WHERE id='.$my['id'].' LIMIT 1;');
     }
   }
-  
+
   if ($hod==5){
-  if ($battle['dist']==2)
-    {
+    if ($battle['dist']==2){
       db_query('UPDATE game_battle SET `dist`=1 WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
       $my['moddeystvie']--;
       db_query('UPDATE game_user SET `moddeystvie`='.$my['moddeystvie'].' WHERE id='.$my['id'].' LIMIT 1;');
     }
-    if ($battle['dist']==1)
-    {
+    if ($battle['dist']==1){
       db_query('UPDATE game_battle SET `dist`=0 WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
       $my['moddeystvie']--;
       db_query('UPDATE game_user SET `moddeystvie`='.$my['moddeystvie'].' WHERE id='.$my['id'].' LIMIT 1;');
     }
   }
-  
-  //удаление боя;
-	if (($my['Hod']==21)&($hod==3)){
-	//db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
-	//db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
-	db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$my['name'].AP.',`LoseUser`= '.AP.$enemy['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-	db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
-	}
-	if (($my['Hod']==20)&($hod==3)){
-	//db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
-	//db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
-	db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-	db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
-	}
 
-//если ХОД =1 то идет грок сделал ход... теперь рассмотрим что он сыграл и сделаем И в какую ФАЗУ
-     //игрок помер
-     if ($my['Smert']==1)
-     {
-     $my['Hod']=20;
-     db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
-     }
-     
-     //игрок сдался
-    if (($hod==2)&($my['Hod']!=0)&($enemy['Hod']!=0))
-    {db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-	    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
-	  db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
-	  }
-     
-     
+  //удаление боя;
+  if (($my['Hod']==21)&&($hod==3)){
+    //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
+    //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
+    db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$my['name'].AP.',`LoseUser`= '.AP.$enemy['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
+  }
+  if (($my['Hod']==20)&&($hod==3)){
+    //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
+    //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
+    db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
+  }
+
+  //если ХОД =1 то идет грок сделал ход... теперь рассмотрим что он сыграл и сделаем И в какую ФАЗУ
+  //игрок помер
+  if ($my['Smert']==1){
+    $my['Hod']=20;
+    db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$enemy['id'].' LIMIT 1;');
+    //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
+    db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
+  }
+
+  //игрок сдался
+  if (($hod==2)&&($my['Hod']!=0)&&($enemy['Hod']!=0)){
+    db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = '.$enemy['id'].' LIMIT 1;');
+    //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$my['id'].' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = '.$enemy['id'].' LIMIT 1;');
+    db_query('DELETE  FROM `modificators` WHERE (`id`='.$my['id'].') OR (`id`='.$enemy['id'].')');
+  }
+
      //ФАЗА 0
-     if (($my['Hod']==0)&($enemy['Hod']==0))
-    {
+  if (($my['Hod']==0)&&($enemy['Hod']==0)){
     //обновим время
-     db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
-     
-  //Бросок инициативы
-     $log=$battle['log']; 
-     
-     $my_inic=$my['Lovkost']+$my['Mishlenie'];
-     $enemy_inic=$enemy['Lovkost']+$enemy['Mishlenie'];
-     
-     $re_my_inic=$my_inic+rand(1,6);   
-		 $re_enemy_inic=$enemy_inic+rand(1,6);   
-		 
-		 
-		 $log=$log."<b>Бросок инициативы</b> \n";
-		 
-		 $log =$log."Результат: \n".$my['name'].": Равен ".$re_my_inic."\n".$enemy['name'].": Равен ".$re_enemy_inic."\n";
-		 
-		 if ($re_my_inic>$re_enemy_inic) //смотрим кому повезло - тот и первый
-		 {
-		 $log =$log.$my['name']." Ходит первым \n";
-		 db_query('UPDATE `game_user` SET `Hod` = "1",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "2",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   
-	   }else
-	   {
-	   $log =$log.$enemy['name']." Ходит первым \n";
-	   db_query('UPDATE `game_user` SET `Hod` = "2",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "1",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$enemy['id'].' LIMIT 1;');
-	   }
-	    
-     db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
-     
-     //Сортируем руку и берем карты из колоды для 1 игрока
-     db_query('SELECT * FROM koloda WHERE   id = '.$my['id'].' LIMIT 1;');
-     $koloda = db_fetch();
-    
+    db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
+
+    //Бросок инициативы
+    $log=$battle['log'];
+
+    $my_inic=$my['Lovkost']+$my['Mishlenie'];
+    $enemy_inic=$enemy['Lovkost']+$enemy['Mishlenie'];
+
+    $re_my_inic=$my_inic+rand(1,6);
+    $re_enemy_inic=$enemy_inic+rand(1,6);
+
+    $log=$log."<b>Бросок инициативы</b> \n";
+
+    $log =$log."Результат: \n".$my['name'].": Равен ".$re_my_inic."\n".$enemy['name'].": Равен ".$re_enemy_inic."\n";
+
+    if ($re_my_inic>$re_enemy_inic){ //смотрим кому повезло - тот и первый
+      $log =$log.$my['name']." Ходит первым \n";
+      db_query('UPDATE `game_user` SET `Hod` = "1",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
+      db_query('UPDATE `game_user` SET `Hod` = "2",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$enemy['id'].' LIMIT 1;');
+    }else{
+      $log =$log.$enemy['name']." Ходит первым \n";
+      db_query('UPDATE `game_user` SET `Hod` = "2",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$my['id'].' LIMIT 1;');
+      db_query('UPDATE `game_user` SET `Hod` = "1",`modranenie`=0,`moddeystvie`=0  WHERE id = '.$enemy['id'].' LIMIT 1;');
+    }
+
+    db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+
+    //Сортируем руку и берем карты из колоды для 1 игрока
+    db_query('SELECT * FROM koloda WHERE   id = '.$my['id'].' LIMIT 1;');
+    $koloda = db_fetch();
+
     $arr = array();
     db_query('SELECT * FROM Hend WHERE (id='.$my['id'].') LIMIT 1;');
     $hend = db_fetch();
+
     //удаляем карты из начала, если не получается добрать карт
-   $j=0;
-    for ($i=1; $i<=($my['Obrazovanie']*3); $i++){if ($hend[$i]<>""){$j++;}}
+    $j=0;
+    for ($i=1; $i<=($my['Obrazovanie']*3); $i++){
+      if ($hend[$i]<>""){$j++;}
+    }
     $sbros=$my['Obrazovanie']-(($my['Obrazovanie']*3)-$j);
-    for ($i=1; $i<=($sbros);$i++)
-    {
-    $hend[$i]="";
+    for ($i=1; $i<=($sbros);$i++){
+      $hend[$i]="";
     }
     //сортируе руку убирая пустые
     $j=1;
@@ -231,7 +228,7 @@ check_auth();//проврка куков
     
     
     //Пропуск хода 1м игроком
-    if (($hod==1)&($my['Hod']==1)&($myhod[1]==0)&($myhod[2]==0)&($myhod[3]==0)&($myhod[4]==0))
+    if (($hod==1)&&($my['Hod']==1)&&($myhod[1]==0)&&($myhod[2]==0)&&($myhod[3]==0)&&($myhod[4]==0))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
@@ -239,35 +236,35 @@ check_auth();//проврка куков
   //передача хода и запись самого хода
      $log=$battle['log']; 
       
-		 $log=$log.$my['name']." Ничего не делает, это шанс для ".$enemy['name']." что бы ответить \n";
-		 
-		 db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+     $log=$log.$my['name']." Ничего не делает, это шанс для ".$enemy['name']." что бы ответить \n";
+  
+     db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
      
      db_query('UPDATE `game_user` SET `Hod` = "7" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "8" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "8" WHERE id = '.$enemy['id'].' LIMIT 1;');
     }
    
-    if (($hod==1)&($my['Hod']==1)&(($myhod[1]!=0)||($myhod[2]!=0)||($myhod[3]!=0)||($myhod[4]!=0)))
+    if (($hod==1)&&($my['Hod']==1)&&(($myhod[1]!=0)||($myhod[2]!=0)||($myhod[3]!=0)||($myhod[4]!=0)))
     {
      //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "3" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "4" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "4" WHERE id = '.$enemy['id'].' LIMIT 1;');
      
      for ($i=1; $i<5; $i++)
-			  {
-			  	    
-			  $lasthod=$lasthod.$hend[$myhod[$i]].";";
-			   } 
-			db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;'); 
-		//Стирание использованных карт из руки
-		 for ($i=1; $i<5; $i++)
-		 {
-		 if ($myhod[$i]!=0)
-		 {
-			db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;'); 
+        {
+  
+        $lasthod=$lasthod.$hend[$myhod[$i]].";";
+         }
+      db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
+    //Стирание использованных карт из руки
+     for ($i=1; $i<5; $i++)
+     {
+     if ($myhod[$i]!=0)
+     {
+      db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;');
      }
      }
      //сортировка руки и запись руки уже с удаленными картами из нее
@@ -283,30 +280,30 @@ check_auth();//проврка куков
     
     
    
-    if (($hod==1)&($my['Hod']==4))
+    if (($hod==1)&&($my['Hod']==4))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "6" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "5" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "5" WHERE id = '.$enemy['id'].' LIMIT 1;');
     
      for ($i=1; $i<5; $i++)
-			  {
-			  $lasthod=$lasthod.$hend[$myhod[$i]].";";
-			  
-			  } 
-			db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
+        {
+        $lasthod=$lasthod.$hend[$myhod[$i]].";";
+  
+        }
+      db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
      
     //include ($hend[$myhod[1]].".php");
     
     //Стирание использованных карт из руки
-		 for ($i=1; $i<5; $i++)
-		 {
-			if ($myhod[$i]!=0)
-		 {
-			db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;'); 
+     for ($i=1; $i<5; $i++)
+     {
+      if ($myhod[$i]!=0)
+     {
+      db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;');
      }
      }
      //сортировка руки и запись руки уже с удаленными картами из нее
@@ -321,10 +318,10 @@ check_auth();//проврка куков
     
      //РАСЧЕТ БОЯ
      
-	  
-	  //открытие лог файла
-	  $log=$battle['log']; 
-	   
+  
+    //открытие лог файла
+    $log=$battle['log'];
+  
                  
     $myhod=split(";",$lasthod);
     $enemyhod=split(";",$enemy['lasthod']);
@@ -391,44 +388,44 @@ check_auth();//проврка куков
 
     
    
-	  
-	  ///Конец расчета боя   
+  
+    ///Конец расчета боя
     
     
     }
     
     //ФАЗА 3
-    if (($hod==1)&($my['Hod']==5))
+    if (($hod==1)&&($my['Hod']==5))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "13" WHERE id = '.$my['id'].' LIMIT 1;');
-	  
-	   
+  
+  
 }
     
     //ФАЗА ОЖИДАНИЯ РЕЗУЛЬТАТА
-    if (($hod==1)&($my['Hod']==6))
+    if (($hod==1)&&($my['Hod']==6))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "14" WHERE id = '.$my['id'].' LIMIT 1;');
-	 //удаление инфы о ходах
-	 	 
+   //удаление инфы о ходах
+  
     }
     
     //Ожидание игроков после хода первого игрока
-    if (($enemy['Hod']==14)&($my['Hod']==13))
+    if (($enemy['Hod']==14)&&($my['Hod']==13))
     {
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "1" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "2" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "2" WHERE id = '.$enemy['id'].' LIMIT 1;');
      db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$enemy['id'].' LIMIT 1;'); 
+     db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$enemy['id'].' LIMIT 1;');
     }
     
    
@@ -436,28 +433,28 @@ check_auth();//проврка куков
     //ФАЗА 4
  
  
-	  
-    if (($hod==1)&($my['Hod']==8)&(($myhod[1]!=0)||($myhod[2]!=0)||($myhod[3]!=0)||($myhod[4]!=0)))
+  
+    if (($hod==1)&&($my['Hod']==8)&&(($myhod[1]!=0)||($myhod[2]!=0)||($myhod[3]!=0)||($myhod[4]!=0)))
     { 
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "10" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "9" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "9" WHERE id = '.$enemy['id'].' LIMIT 1;');
     
      for ($i=1; $i<5; $i++)
-			  {
-			  $lasthod=$lasthod.$hend[$myhod[$i]].";";
-			  
-			  } 
-			db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
+        {
+        $lasthod=$lasthod.$hend[$myhod[$i]].";";
+  
+        }
+      db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
     //Стирание использованных карт из руки
-		 for ($i=1; $i<5; $i++)
-		 {
-			if ($myhod[$i]!=0)
-		 {
-			db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;'); 
+     for ($i=1; $i<5; $i++)
+     {
+      if ($myhod[$i]!=0)
+     {
+      db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;');
      } 
      }
      //сортировка руки и запись руки уже с удаленными картами из нее
@@ -471,7 +468,7 @@ check_auth();//проврка куков
     }
     
     //Пропуск хода 2м игроком
-    if (($hod==1)&($my['Hod']==8)&($myhod[1]==0)&($myhod[2]==0)&($myhod[3]==0)&($myhod[4]==0))
+    if (($hod==1)&&($my['Hod']==8)&&($myhod[1]==0)&&($myhod[2]==0)&&($myhod[3]==0)&&($myhod[4]==0))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
@@ -479,37 +476,37 @@ check_auth();//проврка куков
   //передача хода и запись самого хода
      $log=$battle['log']; 
       
-		 $log=$log.$my['name']." Ничего не делает, пора решить кто ходит первым \n";
-		 
-		 db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+     $log=$log.$my['name']." Ничего не делает, пора решить кто ходит первым \n";
+  
+     db_query('UPDATE `game_battle` SET `log` = "'.$log.'" WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
     
      db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
     }
     
     //ФАЗА 5
-     	  
-    if (($hod==1)&($my['Hod']==9))
+       
+    if (($hod==1)&&($my['Hod']==9))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "11" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "12" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "12" WHERE id = '.$enemy['id'].' LIMIT 1;');
      
      for ($i=1; $i<5; $i++)
-			  {
-			  $lasthod=$lasthod.$hend[$myhod[$i]].";";
-			  
-			  } 
-			db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
+        {
+        $lasthod=$lasthod.$hend[$myhod[$i]].";";
+  
+        }
+      db_query('UPDATE `game_user` SET `lasthod` = "'.$lasthod.'" WHERE id = '.$my['id'].' LIMIT 1;');
     //Стирание использованных карт из руки
-		 for ($i=1; $i<5; $i++)
-		 {
-			if ($myhod[$i]!=0)
-		 {
-			db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;'); 
+     for ($i=1; $i<5; $i++)
+     {
+      if ($myhod[$i]!=0)
+     {
+      db_query('UPDATE `Hend` SET `'.$myhod[$i].'` = "" WHERE id = '.$my['id'].' LIMIT 1;');
      } 
      }
      //сортировка руки и запись руки уже с удаленными картами из нее
@@ -523,10 +520,10 @@ check_auth();//проврка куков
     
      //РАСЧЕТ БОЯ
      
-	  
-	  //открытие лог файла
-	  $log=$battle['log']; 
-	   
+  
+    //открытие лог файла
+    $log=$battle['log'];
+  
                  
     //Тут нужно написать обработчик с инклудами
     //$my['lasthod']=$lasthod;
@@ -593,41 +590,41 @@ check_auth();//проврка куков
 
     
    
-	  
-	  ///Конец расчета боя    
+  
+    ///Конец расчета боя
     
     }
-	    if (($hod==1)&($my['Hod']==11))
+      if (($hod==1)&&($my['Hod']==11))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "15" WHERE id = '.$my['id'].' LIMIT 1;');
-	 //удаление инфы о ходах
+   //удаление инфы о ходах
     }
-    if (($hod==1)&($my['Hod']==12))
+    if (($hod==1)&&($my['Hod']==12))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "16" WHERE id = '.$my['id'].' LIMIT 1;');
-	   //удаление инфы о ходах
-	  
-	  //include ("sorthend.php");
+     //удаление инфы о ходах
+  
+    //include ("sorthend.php");
     }
       //Ожидание игроков после хода первого игрока
-    if (($enemy['Hod']==16)&($my['Hod']==15))
+    if (($enemy['Hod']==16)&&($my['Hod']==15))
     {
     //обновим время
      db_query('UPDATE `game_user` SET `lasttime` = '.time().' WHERE (id = '.$my['id'].' OR id = '.$enemy['id'].') ;');
      
   //передача хода и запись самого хода
      db_query('UPDATE `game_user` SET `Hod` = "7" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `Hod` = "8" WHERE id = '.$enemy['id'].' LIMIT 1;');
+     db_query('UPDATE `game_user` SET `Hod` = "8" WHERE id = '.$enemy['id'].' LIMIT 1;');
      db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$my['id'].' LIMIT 1;');
-	   db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$enemy['id'].' LIMIT 1;');  
+     db_query('UPDATE `game_user` SET `lasthod` = "" WHERE id = '.$enemy['id'].' LIMIT 1;');
     }
         
     
@@ -641,15 +638,15 @@ check_auth();//проврка куков
   db_query('SELECT * FROM game_battle WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
   $battle = db_fetch();
   include ("mods.php");
-	db_query('SELECT * FROM Hend WHERE (id='.$my['id'].') LIMIT 1;');
+  db_query('SELECT * FROM Hend WHERE (id='.$my['id'].') LIMIT 1;');
   $hend = db_fetch();
   
-	echo "kart=";	  
-			  for ($i=0; $i<=($my['Obrazovanie']*3)+1; $i++)
-			  { if ($hend[$i]<>"") 
-			  echo ''.$hend[$i].';';
-			  } 
-	echo "&hod=".$my['Hod']; 
+  echo "kart=";
+        for ($i=0; $i<=($my['Obrazovanie']*3)+1; $i++)
+        { if ($hend[$i]<>"")
+        echo ''.$hend[$i].';';
+        }
+  echo "&hod=".$my['Hod'];
   echo "&enemyhod=".$enemy['lasthod'];
   echo "&myhod=".$my['lasthod'];
   
@@ -698,5 +695,5 @@ check_auth();//проврка куков
   $time_end = getmicrotime();
   $time_d = round($time_end - $time_start,4);
   echo '&Время генерации странички: '.$time_d.' сек.';
-			  
+  
 ?>
