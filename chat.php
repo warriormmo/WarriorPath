@@ -9,7 +9,7 @@ $mesage =$_POST["mesage"];
   require_once('func.php');
   
   db_open();
-  check_auth();//проврка куков
+  check_auth();//РїСЂРѕРІСЂРєР° РєСѓРєРѕРІ
 
   db_query('SELECT * FROM game_user WHERE userid='.AP.$my['userid'].AP.' LIMIT 1;');
   $my = db_fetch();

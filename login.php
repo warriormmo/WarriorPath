@@ -1,8 +1,8 @@
 <?php
   header("Expires: Mon, 1 Jul 1990 05:00:00 GMT");
-		header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-		header("Cache-Control: no-cache, must-revalidate");
-		header("Pragma: no-cache");
+                header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                header("Cache-Control: no-cache, must-revalidate");
+                header("Pragma: no-cache");
   $msg      = '';
   $redirect = '';
    require_once('func.php');
@@ -11,7 +11,7 @@
   if(isset($_POST['txtUserName']) AND
      isset($_POST['txtUserPass']))
     {
-    $is_auth = false; // Èçíà÷àëüíî íå àâòîðèçîâàíû
+    $is_auth = false; // Ð˜Ð·Ð½Ð°Ñ‡Ð°Ð»ÑŒÐ½Ð¾ Ð½Ðµ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½Ñ‹
     require_once('func.php');
     db_open();
     db_query('SELECT * FROM game_user WHERE name='.AP.$_POST['txtUserName'].AP.' LIMIT 1 ;');
@@ -22,7 +22,7 @@
       {
         setcookie(cookname,$user['userid']);
         $is_auth = true;
-      }else{  // Íå ïîäõîäèò ïàðîëü
+      }else{  // ÐÐµ Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ
               $is_auth = false; }
     }else{    $is_auth = false; }
 
