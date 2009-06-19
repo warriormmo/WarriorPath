@@ -1,0 +1,4 @@
+*.kdevelop
+*~
+*.db
+Doxyfile
