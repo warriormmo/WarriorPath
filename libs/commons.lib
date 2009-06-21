@@ -1,0 +1,14 @@
+<?php
+
+  function cmn_errorOut($message = '', $flag = 0){
+    if (!$message || !$flag) return false;
+
+    $message = date('[d/m/Y H:i:s] ').$message;
+    error_log($message);
+    if ((DEBUG_LEVEL & $flag) || (DEBUG_LEVEL & FAIL_ON_ALL_ERROR)){
+      echo "<pre><font color='red'>".nl2br($message)."</font></pre><br>";
+      exit;
+    }
+  }
+
+?>
