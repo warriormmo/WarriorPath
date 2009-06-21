@@ -1,0 +1,125 @@
+<?php
+
+  define('DB_NE',       '!=');
+  define('DB_EQU',      '=');
+  define('DB_GE',       '>=');
+  define('DB_LE',       '<=');
+  define('DB_LT',       '<');
+  define('DB_GB',       '>');
+  define('DB_LIKE',     'like');
+  define('DB_BETWEEN',  'between');
+
+  define('DB_OR', 'or');
+  define('DB_AND', 'and');
+
+  global $db_fv_relations, $db_ff_relations;
+  $db_fv_relations = array(
+    DB_NE, DB_EQU, DB_GE, DB_LE, DB_LT, DB_GB, DB_LIKE, DB_BETWEEN
+  );
+  $db_ff_relations = array(
+    DB_OR, DB_AND,
+  );
+
+  global $db_templates;
+  $db_templates = array(
+    DB_NE => '%field% != \'%value%\'',
+    DB_EQU => '%field% = \'%value%\'',
+    DB_GE => '%field% >= \'%value%\'',
+    DB_LE => '%field% <= \'%value%\'',
+    DB_LT => '%field% < \'%value%\'',
+    DB_GB => '%field% > \'%value%\'',
+    DB_LIKE => '%field% like \'%%value%%\'',
+    DB_BETWEEN => '%field% between \'%value%\' and \'%value2%\'',
+    DB_OR => '(%field1% or %field2%)',
+    DB_AND => '(%field1% and %field2%)',
+  );
+
+  function db_getTableList($dbObj, $withFields = true){
+    $tables = $dbObj->select('select TABLE_NAME AS ARRAY_KEY from information_schema.tables where TABLE_SCHEMA = ?',
+      $dbObj->database_name);
+
+    if ($withFields && is_array($tables)){
+      foreach($tables as $key => $tbl_desc){
+        $tbl = $key;
+        $tbl_desc['name'] = $key;
+        $fields = $dbObj->selectCol('select COLUMN_NAME from information_schema.columns where TABLE_NAME = ?', $tbl);
+        $tbl_desc['fields'] = $fields;
+        $tbl_desc['field_list'] = implode(',', $fields);
+        $tables[$key] = $tbl_desc;
+      }
+    }
+
+    return $tables;
+  }
+
+  function db_field($field, $relation, $value, $value2 = false){
+    global $db_fv_relations;
+    if (!in_array($relation, array_keys($db_fv_relations)))
+      return array();
+    $field = array(
+      'field' => $field,
+      'relation' => $relation,
+      'value' => $value,
+    );
+    if ($value2!== false)
+      $field['value2'] = $value2;
+    return array($field);
+  }
+
+  function db_relation($field, $relation, $field2){
+    global $db_ff_relations;
+    if (!in_array($relation, array_keys($db_ff_relations)))
+      return array();
+    $_relation = array(
+      'field' => $field,
+      'relation' => $relation,
+      'field2' => $field2,
+    );
+    return array($_relation);
+  }
+
+  function db_prepareWhereCase($whereRelation = array()){
+    global $db_templates, $db_fv_relations, $db_ff_relations;
+    if (!$whereRelation || !is_array($whereRelation)) return '';
+    foreach($whereRelation as $key => $relation){
+      if (in_array($relation['relation'], $db_fv_relations)){
+        $sql = $db_templates[$relation['relation']];
+        $sql = str_replace('%field%', '`'.$relation['field'].'`', $sql);
+        $sql = str_replace('%value%', $relation['value'], $sql);
+        if (@$relation['value2'])
+          $sql = str_replace('%value2%', $relation['value2'], $sql);
+        return $sql;
+      } elseif (in_array($relation['relation'], $db_ff_relations)){
+        $sql = $db_templates[$relation['relation']];
+        $field1 = db_prepareWhereCase($relation['field']);
+        $field2 = db_prepareWhereCase($relation['field2']);
+        $sql = str_replace('%field1%', $field1, $sql);
+        $sql = str_replace('%field2%', $field2, $sql);
+        return $sql;
+      }
+    }
+    return '';
+  }
+
+  function db_select($dbObj, $table, $fields=array(), $whereRelation=array(), $postQuery=''){
+    global $dbs_struct;
+    if (!$dbObj) cmn_errorOut('[db_select] ERROR: Incorrect dbObj', FAIL_ON_DB_ERROR);
+    if (!$dbs_struct || !in_array($dbObj->database_name, array_keys($dbs_struct))) cmn_errorOut('[db_select] ERROR: DB ('.$dbObj->database_name.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+
+    $tbl_desc = @$dbs_struct[$dbObj->database_name][$table];
+    if (!$tbl_desc) cmn_errorOut('[db_select] ERROR: Table ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+
+    $tbl_fields = $tbl_desc['fields'];
+    if (!$tbl_fields) cmn_errorOut('[db_select] ERROR: Table\'s fields ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+
+    $fields = $fields ? (is_array($fields) ? $fields : explode(',', $fields)) : $tbl_fields;
+    foreach($fields as $k => $name)
+      if (!in_array($name, $tbl_fields)) unset($fields[$k]);
+
+    $where = db_prepareWhereCase($whereRelation);
+    $where = $where ? ' and '.$where : '';
+
+    return $dbObj->select('select ?# from ?# where 1 '.$where.$postQuery, $fields, $table);
+  }
+
+?>
