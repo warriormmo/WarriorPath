@@ -25,6 +25,8 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
 {
     var $link;
 
+    var $database_name;
+
     /**
      * constructor(string $dsn)
      * Connect to MySQL.
@@ -43,6 +45,7 @@ class DbSimple_Mysql extends DbSimple_Generic_Database
         );
         $this->_resetLastError();
         if (!$ok) return $this->_setDbError('mysql_connect()');
+        $this->database_name = preg_replace('{^/}s', '', $p['path']);
         $ok = @mysql_select_db(preg_replace('{^/}s', '', $p['path']), $this->link);
         if (!$ok) return $this->_setDbError('mysql_select_db()');
     }
