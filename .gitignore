@@ -4,3 +4,4 @@
 *.db
 Doxyfile
 config/config.inc
+*.log
