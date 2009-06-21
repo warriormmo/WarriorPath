@@ -9,6 +9,7 @@
       echo "<pre><font color='red'>".nl2br($message)."</font></pre><br>";
       exit;
     }
+    return false;
   }
 
 ?>
