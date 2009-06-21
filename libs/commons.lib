@@ -12,4 +12,8 @@
     return false;
   }
 
+  function cmn_generateResultXML($error){
+    return '<root error="'.$error.'" />'
+  }
+
 ?>
