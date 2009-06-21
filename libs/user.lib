@@ -1,0 +1,29 @@
+<?php
+  require_once('include/commons.inc');
+
+  function usr_updateUser($usr_data, $where = array()){
+    global $db_main;
+    if (!is_array($where))
+      $where = array('id' => ($where ? $where : @$usr_data['id']));
+    $where = db_convert2DbFields($where);
+    return db_updateRow($db_main, 'users', $usr_data, '', $where);
+  }
+
+  function usr_insertUser($usr_data){
+    global $db_main;
+    $usr_data['reg_date'] = @$usr_data['reg_date'] ? $usr_data['reg_date'] : time();
+    return db_insert($db_main, 'users', $usr_data);
+  }
+
+  function usr_getUser($usr_data){
+    global $db_main;
+    $where = db_convert2DbFields($usr_data);
+    return db_selectRow($db_main, 'users', '', $where);
+  }
+
+  function usr_deleteUser($usr_data){
+    global $db_main;
+    $where = db_convert2DbFields($usr_data);
+    return db_deleteRow($db_main, 'users', $where);
+  }
+?>
