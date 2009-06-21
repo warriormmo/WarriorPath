@@ -144,6 +144,11 @@
     return $dbObj->selectCell('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
   }
 
+  function db_selectCount($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    return $dbObj->selectCell('select count(0) as iCount from ?# where 1 '.$where.$postQuery.' limit 0,1', $table);
+  }
+
   function db_insert($dbObj, $table, $values, $fields = array()){
     $fields = array_keys($values);
     if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
@@ -153,5 +158,30 @@
         unset($values[$name]);
     }
     return $dbObj->query('insert into ?# set ?a ', $table, $values);
+  }
+
+  function db_update($dbObj, $table, $values, $fields = array(), $where=array(), $postQuery=''){
+    $fields = array_keys($values);
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+
+    foreach($values as $name => $value){
+      if (!in_array($name, $fields))
+        unset($values[$name]);
+    }
+    return $dbObj->query('update ?# set ?a where 1 '.$where.$postQuery, $table, $values);
+  }
+
+  function db_updateRow($dbObj, $table, $values, $fields = array(), $where=array(), $postQuery=''){
+    return db_update($dbObj, $table, $values, $fields, $where, $postQuery.' LIMIT 1');
+  }
+
+  function db_delete($dbObj, $table, $where=array(), $postQuery=''){
+    $fields = array();
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    return $dbObj->query('delete from ?# where 1 '.$where.$postQuery, $table);
+  }
+
+  function db_deleteRow($dbObj, $table, $where=array(), $postQuery=''){
+    return db_delete($dbObj, $table, $where, $postQuery.' LIMIT 1');
   }
 ?>
