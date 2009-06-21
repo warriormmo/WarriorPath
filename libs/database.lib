@@ -143,4 +143,15 @@
     if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
     return $dbObj->selectCell('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
   }
+
+  function db_insert($dbObj, $table, $values, $fields = array()){
+    $fields = array_keys($values);
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+
+    foreach($values as $name => $value){
+      if (!in_array($name, $fields))
+        unset($values[$name]);
+    }
+    return $dbObj->query('insert into ?# set ?a ', $table, $values);
+  }
 ?>
