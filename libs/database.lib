@@ -101,25 +101,45 @@
     return '';
   }
 
-  function db_select($dbObj, $table, $fields=array(), $whereRelation=array(), $postQuery=''){
+  function db_prepareQuery($dbObj, $table, &$fields, &$where, $postQuery){
     global $dbs_struct;
-    if (!$dbObj) cmn_errorOut('[db_select] ERROR: Incorrect dbObj', FAIL_ON_DB_ERROR);
-    if (!$dbs_struct || !in_array($dbObj->database_name, array_keys($dbs_struct))) cmn_errorOut('[db_select] ERROR: DB ('.$dbObj->database_name.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+    if (!$dbObj) return cmn_errorOut('[db_select] ERROR: Incorrect dbObj', FAIL_ON_DB_ERROR);
+    if (!$dbs_struct || !in_array($dbObj->database_name, array_keys($dbs_struct))) return cmn_errorOut('[db_select] ERROR: DB ('.$dbObj->database_name.') not found in dbs_struct', FAIL_ON_DB_ERROR);
 
     $tbl_desc = @$dbs_struct[$dbObj->database_name][$table];
-    if (!$tbl_desc) cmn_errorOut('[db_select] ERROR: Table ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+    if (!$tbl_desc) return cmn_errorOut('[db_select] ERROR: Table ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
 
     $tbl_fields = $tbl_desc['fields'];
-    if (!$tbl_fields) cmn_errorOut('[db_select] ERROR: Table\'s fields ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
+    if (!$tbl_fields) return cmn_errorOut('[db_select] ERROR: Table\'s fields ('.$table.') not found in dbs_struct', FAIL_ON_DB_ERROR);
 
     $fields = $fields ? (is_array($fields) ? $fields : explode(',', $fields)) : $tbl_fields;
     foreach($fields as $k => $name)
       if (!in_array($name, $tbl_fields)) unset($fields[$k]);
+    if (!$fields)  return cmn_errorOut('[db_select] ERROR: Filds list are empty', FAIL_ON_DB_ERROR);
 
-    $where = db_prepareWhereCase($whereRelation);
+    $where = db_prepareWhereCase($where);
     $where = $where ? ' and '.$where : '';
 
+    return true;
+  }
+
+  function db_select($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
     return $dbObj->select('select ?# from ?# where 1 '.$where.$postQuery, $fields, $table);
   }
 
+  function db_selectRow($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    return $dbObj->selectRow('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
+  }
+
+  function db_selectCol($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    return $dbObj->selectCol('select ?# from ?# where 1 '.$where.$postQuery, $fields, $table);
+  }
+
+  function db_selectCell($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    return $dbObj->selectCell('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
+  }
 ?>
