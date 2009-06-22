@@ -1,39 +1,5 @@
 <?php
 
-  define('DB_NE',       '!=');
-  define('DB_EQU',      '=');
-  define('DB_GE',       '>=');
-  define('DB_LE',       '<=');
-  define('DB_LT',       '<');
-  define('DB_GB',       '>');
-  define('DB_LIKE',     'like');
-  define('DB_BETWEEN',  'between');
-
-  define('DB_OR', 'or');
-  define('DB_AND', 'and');
-
-  global $db_fv_relations, $db_ff_relations;
-  $db_fv_relations = array(
-    DB_NE, DB_EQU, DB_GE, DB_LE, DB_LT, DB_GB, DB_LIKE, DB_BETWEEN
-  );
-  $db_ff_relations = array(
-    DB_OR, DB_AND,
-  );
-
-  global $db_templates;
-  $db_templates = array(
-    DB_NE => '%field% != \'%value%\'',
-    DB_EQU => '%field% = \'%value%\'',
-    DB_GE => '%field% >= \'%value%\'',
-    DB_LE => '%field% <= \'%value%\'',
-    DB_LT => '%field% < \'%value%\'',
-    DB_GB => '%field% > \'%value%\'',
-    DB_LIKE => '%field% like \'%%value%%\'',
-    DB_BETWEEN => '%field% between \'%value%\' and \'%value2%\'',
-    DB_OR => '(%field1% or %field2%)',
-    DB_AND => '(%field1% and %field2%)',
-  );
-
   function db_getTableList($dbObj, $withFields = true){
     $tables = $dbObj->select('select TABLE_NAME AS ARRAY_KEY from information_schema.tables where TABLE_SCHEMA = ?',
       $dbObj->database_name);
@@ -52,58 +18,20 @@
     return $tables;
   }
 
-  function db_field($field, $relation, $value, $value2 = false){
-    global $db_fv_relations;
-    if (!in_array($relation, array_keys($db_fv_relations)))
-      return array();
-    $field = array(
-      'field' => $field,
-      'relation' => $relation,
-      'value' => $value,
-    );
-    if ($value2!== false)
-      $field['value2'] = $value2;
-    return array($field);
+  function db_pholder(){
+    return func_get_args();
   }
 
-  function db_relation($field, $relation, $field2){
-    global $db_ff_relations;
-    if (!in_array($relation, array_keys($db_ff_relations)))
-      return array();
-    $_relation = array(
-      'field' => $field,
-      'relation' => $relation,
-      'field2' => $field2,
-    );
-    return array($_relation);
-  }
-
-  function db_prepareWhereCase($whereRelation = array(), $allow_fields = array()){
-    global $db_templates, $db_fv_relations, $db_ff_relations;
-    if (!$whereRelation || !is_array($whereRelation)) return '';
+  function db_prepareWhereCase($dbObj, $where = array(), $allow_fields = array()){
+    if (!$where) return '';
     if (!$allow_fields || !is_array($allow_fields)) return '';
-    foreach($whereRelation as $key => $relation){
-      if (in_array($relation['relation'], $db_fv_relations)){
-        if (!in_array($relation['field'], $allow_fields)) return '';
-        $sql = $db_templates[$relation['relation']];
-        $sql = str_replace('%field%', '`'.$relation['field'].'`', $sql);
-        $sql = str_replace('%value%', mysql_real_escape_string($relation['value']), $sql);
-        if (@$relation['value2'])
-          $sql = str_replace('%value2%', $relation['value2'], $sql);
-        return $sql;
-      } elseif (in_array($relation['relation'], $db_ff_relations)){
-        $sql = $db_templates[$relation['relation']];
-        $field1 = db_prepareWhereCase($relation['field'], $allow_fields);
-        $field2 = db_prepareWhereCase($relation['field2'], $allow_fields);
-        $sql = str_replace('%field1%', $field1, $sql);
-        $sql = str_replace('%field2%', $field2, $sql);
-        return $sql;
-      }
-    }
-    return '';
+
+    $where = (!is_array($where)) ? array(0 => $where) : $where;
+    $dbObj->_expandPlaceholders($where, false);
+    return $where[0];
   }
 
-  function db_prepareQuery($dbObj, $table, &$fields, &$where, $postQuery){
+  function db_prepareQuery($dbObj, $table, &$fields, &$where){
     global $dbs_struct;
     if (!$dbObj) return cmn_errorOut('[db_select] ERROR: Incorrect dbObj', FAIL_ON_DB_ERROR);
     if (!$dbs_struct || !in_array($dbObj->database_name, array_keys($dbs_struct))) return cmn_errorOut('[db_select] ERROR: DB ('.$dbObj->database_name.') not found in dbs_struct', FAIL_ON_DB_ERROR);
@@ -119,39 +47,39 @@
       if (!in_array($name, $tbl_fields)) unset($fields[$k]);
     if (!$fields)  return cmn_errorOut('[db_select] ERROR: Filds list are empty', FAIL_ON_DB_ERROR);
 
-    $where = db_prepareWhereCase($where, $tbl_fields);
+    $where = db_prepareWhereCase($dbObj, $where, $tbl_fields);
     $where = $where ? ' and '.$where : '';
     return true;
   }
 
-  function db_select($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->select('select ?# from ?# where 1 '.$where.$postQuery, $fields, $table);
+  function db_select($dbObj, $table, $fields=array(), $where=array()){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->select('select ?# from ?# where 1 '.$where, $fields, $table);
   }
 
-  function db_selectRow($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->selectRow('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
+  function db_selectRow($dbObj, $table, $fields=array(), $where=array()){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->selectRow('select ?# from ?# where 1 '.$where.' limit 0,1', $fields, $table);
   }
 
-  function db_selectCol($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->selectCol('select ?# from ?# where 1 '.$where.$postQuery, $fields, $table);
+  function db_selectCol($dbObj, $table, $fields=array(), $where=array()){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->selectCol('select ?# from ?# where 1 '.$where, $fields, $table);
   }
 
-  function db_selectCell($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->selectCell('select ?# from ?# where 1 '.$where.$postQuery.' limit 0,1', $fields, $table);
+  function db_selectCell($dbObj, $table, $fields=array(), $where=array()){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->selectCell('select ?# from ?# where 1 '.$where.' limit 0,1', $fields, $table);
   }
 
-  function db_selectCount($dbObj, $table, $fields=array(), $where=array(), $postQuery=''){
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->selectCell('select count(0) as iCount from ?# where 1 '.$where.$postQuery.' limit 0,1', $table);
+  function db_selectCount($dbObj, $table, $fields=array(), $where=array()){
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->selectCell('select count(0) as iCount from ?# where 1 '.$where.' limit 0,1', $table);
   }
 
   function db_insert($dbObj, $table, $values, $fields = array()){
     $fields = array_keys($values);
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
 
     foreach($values as $name => $value){
       if (!in_array($name, $fields))
@@ -160,28 +88,38 @@
     return $dbObj->query('insert into ?# set ?a ', $table, $values);
   }
 
-  function db_update($dbObj, $table, $values, $fields = array(), $where=array(), $postQuery=''){
+  function db_update($dbObj, $table, $values, $fields = array(), $where=array()){
     $fields = array_keys($values);
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
 
     foreach($values as $name => $value){
       if (!in_array($name, $fields))
         unset($values[$name]);
     }
-    return $dbObj->query('update ?# set ?a where 1 '.$where.$postQuery, $table, $values);
+    return $dbObj->query('update ?# set ?a where 1 '.$where, $table, $values);
   }
 
-  function db_updateRow($dbObj, $table, $values, $fields = array(), $where=array(), $postQuery=''){
-    return db_update($dbObj, $table, $values, $fields, $where, $postQuery.' LIMIT 1');
+  function db_updateRow($dbObj, $table, $values, $fields = array(), $where=array()){
+    if (!is_array($where)){
+      $where .= ' LIMIT 1';
+    } else {
+      $where[0] .= ' LIMIT 1';
+    }
+    return db_update($dbObj, $table, $values, $fields, $where);
   }
 
-  function db_delete($dbObj, $table, $where=array(), $postQuery=''){
+  function db_delete($dbObj, $table, $where=array()){
     $fields = array();
-    if (!db_prepareQuery($dbObj, $table, $fields, $where, $postQuery)) return array();
-    return $dbObj->query('delete from ?# where 1 '.$where.$postQuery, $table);
+    if (!db_prepareQuery($dbObj, $table, $fields, $where)) return array();
+    return $dbObj->query('delete from ?# where 1 '.$where, $table);
   }
 
-  function db_deleteRow($dbObj, $table, $where=array(), $postQuery=''){
-    return db_delete($dbObj, $table, $where, $postQuery.' LIMIT 1');
+  function db_deleteRow($dbObj, $table, $where=array()){
+    if (!is_array($where)){
+      $where .= ' LIMIT 1';
+    } else {
+      $where[0] .= ' LIMIT 1';
+    }
+    return db_delete($dbObj, $table, $where);
   }
 ?>
