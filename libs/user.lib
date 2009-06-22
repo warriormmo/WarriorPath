@@ -4,7 +4,7 @@
   function usr_updateUser($usr_data, $where = array()){
     global $db_main;
     if (!is_array($where))
-      $where = db_pholder(' id = ? ', ($where ? $where : @$usr_data['id']));
+      $where = array('where' => db_pholder(' id = ? ', ($where ? $where : @$usr_data['id'])));
     return db_updateRow($db_main, 'users', $usr_data, '', $where);
   }
 
@@ -23,12 +23,8 @@
 
   function usr_deleteUser($usr_data, $where = array()){
     global $db_main;
-    $_where = is_string($usr_data) ? $usr_data : db_pholder(' ?a ', $usr_data);
-    if (!empty($where)){
-      $_where[0] .= $where[0];
-      for($i=1;$i<count($where);$i++)
-        array_push($_where, $where[$i]);
-    }
+    $_where = is_array($usr_data) ? $usr_data : array('id' => $usr_data);
+    $_where['where'] = $where;
     return db_deleteRow($db_main, 'users', $_where);
   }
 ?>
