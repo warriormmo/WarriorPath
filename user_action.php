@@ -6,6 +6,8 @@
 
   $error =  '';
 
+  header('Content-type: text/xml; charset: UTF-8');
+
   switch($action){
     case 'reg':
       $user_nick = @$_REQUEST['nick'];
@@ -44,6 +46,7 @@
         $user = usr_getUser(array(
           'nick' => $user_nick
         ));
+
         if (!$user){
           $error = 'Пользователь с таким ником не найден.';
         } else {
@@ -52,7 +55,8 @@
           }
         }
       }
-      if ($error == 0){
+
+      if ($error === 0){
         setcookie(cookie_userid, $user['id'], 0, '/');
         usr_updateUser(array('lastvisit_date' => time()), $user['id']);
       } else {
