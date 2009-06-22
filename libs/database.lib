@@ -26,9 +26,32 @@
     if (!$where) return '';
     if (!$allow_fields || !is_array($allow_fields)) return '';
 
-    $where = (!is_array($where)) ? array(0 => $where) : $where;
-    $dbObj->_expandPlaceholders($where, false);
-    return $where[0];
+    $_where = array();
+    if (is_string($where)){
+      $_where[0]= $where;
+    } elseif (is_array($where)) {
+      $postQuery = @$where['where'];
+      unset($where['where']);
+      $sql = array();
+      foreach($where as $name => $value){
+        $sql[] = ' ?# = ? ';
+        $_where[] = $name;
+        $_where[] = $value;
+      }
+      $sql = implode(' and ', $sql);
+      array_unshift($_where, $sql);
+      if ($postQuery){
+        if (is_string($postQuery)){
+          $_where[0] .= $postQuery;
+        } elseif (is_array($postQuery)) {
+          $_where[0] .= $postQuery[0];
+          for($i=1;$i<count($postQuery);$i++)
+            array_push($_where, $postQuery[$i]);
+        }
+      }
+    }
+    $dbObj->_expandPlaceholders($_where, false);
+    return $_where[0];
   }
 
   function db_prepareQuery($dbObj, $table, &$fields, &$where){
@@ -103,7 +126,7 @@
     if (!is_array($where)){
       $where .= ' LIMIT 1';
     } else {
-      $where[0] .= ' LIMIT 1';
+      $where['where'][0] .= ' LIMIT 1';
     }
     return db_update($dbObj, $table, $values, $fields, $where);
   }
@@ -118,7 +141,7 @@
     if (!is_array($where)){
       $where .= ' LIMIT 1';
     } else {
-      $where[0] .= ' LIMIT 1';
+      $where['where'][0] .= ' LIMIT 1';
     }
     return db_delete($dbObj, $table, $where);
   }
