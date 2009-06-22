@@ -16,9 +16,9 @@
     $message = $error;
     if ($error){
       $message = '<![CDATA['.$error.']]>';
+      return "<root>\n<error>".$message."</error>\n </root>";
     }
-
-    return '<root error="'.$message.'" />';
+    return "<root error = '$error' />";
   }
 
 ?>
