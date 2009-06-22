@@ -17,11 +17,7 @@
       if (!$user_password) $error .= "\nОтсутвует пароль пользователя!";
 
       if (!$error){
-        $user = usr_getUser(db_relation(
-          db_field('nick', DB_EQU, $user_nick),
-          DB_OR,
-          db_field('email', DB_EQU, $user_email)
-        ));
+        $user = usr_getUser('', db_pholder(' `nick` = ? or `email` = ? ', $user_nick, $user_email));
 
         if ($user){
           if (strtolower($user['nick']) == strtolower($user_nick)) $error = 'Пользователь с таким ником уже присутствует в игре';
