@@ -1,37 +1,35 @@
 <?php
   header("Expires: Mon, 1 Jul 1990 05:00:00 GMT");
-  header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-  header("Cache-Control: no-cache, must-revalidate");
-  header("Pragma: no-cache");
-  $msg = '';
+		header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+		header("Cache-Control: no-cache, must-revalidate");
+		header("Pragma: no-cache");
+  $msg      = '';
   $redirect = '';
-  require_once('func.php');
-  //check_auth();
+   require_once('func.php');
+  //check_auth(); 
 
-  if (isset($_POST['txtUserName']) and isset($_POST['txtUserPass'])) {
-    // Ð˜Ð·Ð½Ð°Ñ‡Ð°Ð»ÑŒÐ½Ð¾ Ð½Ðµ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½Ñ‹
-    $is_auth = false;
+  if(isset($_POST['txtUserName']) AND
+     isset($_POST['txtUserPass']))
+    {
+    $is_auth = false; // Èçíà÷àëüíî íå àâòîðèçîâàíû
     require_once('func.php');
     db_open();
-    db_query('SELECT * FROM game_user WHERE name=' . AP . $_POST['txtUserName'] . AP . ' LIMIT 1 ;');
+    db_query('SELECT * FROM game_user WHERE name='.AP.$_POST['txtUserName'].AP.' LIMIT 1 ;');
     $user = db_fetch();
-    if (!empty($user)) {
-      if ($user['pass'] == md5($_POST['txtUserPass'])) {
-        setcookie(cookname, $user['userid']);
+    if(!empty($user))
+    {
+      if($user['pass'] == md5($_POST['txtUserPass']))
+      {
+        setcookie(cookname,$user['userid']);
         $is_auth = true;
-      } else {
-        // ÐÐµ Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ
-        $is_auth = false;
-      }
-    } else {
-      $is_auth = false;
-    }
+      }else{  // Íå ïîäõîäèò ïàðîëü
+              $is_auth = false; }
+    }else{    $is_auth = false; }
 
-    if ($is_auth) {
-      echo("ok=1");
-    } else {
-
-      echo("ok=false");
-    }
+    if($is_auth)
+    { echo ("ok=1");
+    }else{
+      echo ("ok=false");  }
   }
+
 ?>
