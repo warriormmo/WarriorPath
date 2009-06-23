@@ -11,7 +11,7 @@
   if(isset($_POST['txtUserName']) AND
      isset($_POST['txtUserPass']))
     {
-    $is_auth = false; // Изначально не авторизованы
+    $is_auth = false; // РР·РЅР°С‡Р°Р»СЊРЅРѕ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅС‹
     require_once('func.php');
     db_open();
     db_query('SELECT * FROM game_user WHERE name='.AP.$_POST['txtUserName'].AP.' LIMIT 1 ;');
@@ -23,7 +23,7 @@
         db_query('UPDATE `game_user` SET `userid` = '.AP.$id.AP.' WHERE `name` = '.AP.$_POST['txtUserName'].AP.' LIMIT 1;');
         setcookie(cookname,$id);
         $is_auth = true;
-      }else{  // Не подходит пароль
+      }else{  // РќРµ РїРѕРґС…РѕРґРёС‚ РїР°СЂРѕР»СЊ
               $is_auth = false; }
     }else{    $is_auth = false; }
 
