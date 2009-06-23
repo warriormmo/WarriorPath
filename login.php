@@ -19,8 +19,9 @@
     if(!empty($user))
     {
       if($user['pass'] == md5($_POST['txtUserPass']))
-      {
-        setcookie(cookname,$user['userid']);
+      { $id=md5(generate_password(10));
+        db_query('UPDATE `game_user` SET `userid` = '.AP.$id.AP.' WHERE `name` = '.AP.$_POST['txtUserName'].AP.' LIMIT 1;');
+        setcookie(cookname,$id);
         $is_auth = true;
       }else{  // Не подходит пароль
               $is_auth = false; }

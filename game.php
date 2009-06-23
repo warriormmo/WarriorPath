@@ -98,7 +98,7 @@ $nocashe=rand(0,100000);
     db_query('INSERT INTO koloda (SELECT * FROM UserKoloda WHERE id='.$my['id'].' LIMIT 1)');
     db_query('UPDATE game_user SET hod="0" WHERE id='.$my['id'].' LIMIT 1;');
   //  db_query('UPDATE game_user SET hod="0" WHERE id='.$battle['user1'].' LIMIT 1;');
-    db_query('UPDATE game_battle SET user2enter="1" WHERE (id='.$my['id'].')AND(`end`!=1) LIMIT 1;');
+    db_query('UPDATE game_battle SET user2enter="1" WHERE (user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
     redirect('battle.php'.'?nocashe='.$nocashe); // Переходим в сражение
   }
    //пользователь удалил сражение
