@@ -41,13 +41,16 @@ if ($battle['dist']==1)
     }
 $my['moddeystvie']--;
 $log =$log.$second." теряет равновесие. \n";
+include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
+db_query('INSERT INTO `modificators`(id,time,napopdaludarnogoy,napopblgudarnogoy,napovdaludarnogoy,napovblgudarnogoy)  VALUES ('.$enemy['id'].',1000,1,1,1,1)');//занесение в моды
 
 if ($mymodraneniya<$my['modranenie']){$my['modranenie']=$mymodraneniya;$log =$log."Модификатор от раны:".$mymodraneniya."\n";}//запись ранения
-}else{$log =$log.$second." отбил удар. \n";}
+}else{$log =$log.$second." отбил удар. \n";
+include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
+}
 }
 }  
 $enemy['moddeystvie']--;//минусование мода действия
 //удаление всех модификаторов кроме стоек и техник
-include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
-db_query('INSERT INTO `modificators`(id,time,napopdaludarnogoy,napopblgudarnogoy,napovdaludarnogoy,napovblgudarnogoy)  VALUES ('.$enemy['id'].',1000,1,1,1,1)');//занесение в моды
+
 ?>
