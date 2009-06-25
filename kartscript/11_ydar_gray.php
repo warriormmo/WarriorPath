@@ -40,16 +40,20 @@ $damagecount=$enemy['Sila']+$enemymods['nadamage']-round(($my['Sila']/2))+$mymod
 if ($damagecount>0){for ($i=1; $i<=$damagecount; $i++){$damage=$damage+rand(1,6);}}else{$damage=0;}//бросок кубиков
 $log =$log.$first." попал \n"."Сила удара ".$damagecount." кубиков, результат ".$damage."\n";
 include ("myhealth.php");//расчет ранений в зависимости от дамага
+//удаление всех модификаторов кроме стоек и техник
+include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
 
 db_query('UPDATE `Hend` SET `1` = "" WHERE id = '.$my['id'].' LIMIT 1;');//контузия
 $log =$log.$second." контужен, похоже он что-то забыл. \n";
+db_query('INSERT INTO `modificators`(id,time,napopdaludarrukoy,napopblgudarrukoy)  VALUES ('.$enemy['id'].',1000,1,1)');//занесение в моды
 
 if ($mymodraneniya<$my['modranenie']){$my['modranenie']=$mymodraneniya;$log =$log."Модификатор от раны:".$mymodraneniya."\n";}//запись ранения
-}else{$log =$log.$second." отбил удар. \n";}
+}else{$log =$log.$second." отбил удар. \n";
+//удаление всех модификаторов кроме стоек и техник
+include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
+}
 }
 }  
 $enemy['moddeystvie']--;//минусование мода действия
-//удаление всех модификаторов кроме стоек и техник
-include("delmods.php");//ВЫТЕРАЕМ моды нафиг 
-db_query('INSERT INTO `modificators`(id,time,napopdaludarrukoy,napopblgudarrukoy)  VALUES ('.$enemy['id'].',1000,1,1)');//занесение в моды
+
 ?>

@@ -3,32 +3,32 @@
 LOG_FILE=$HOME"/.git.logs"
 
 if [ "$1" = "help" ]; then
-  echo "РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ: update.sh [reset|help]"
+  echo "Использование: update.sh [reset|help]"
   echo ""
-  echo "  help - РІС‹РІРѕРґРёС‚ СЌС‚РѕС‚ С‚РµРєСЃС‚."
-  echo "  reset - СЃР±СЂР°СЃС‹РІР°РµС‚ Р»РѕРєР°Р»СЊРЅС‹Рµ master Рё test Рє СѓРґР°Р»РµРЅРЅС‹Рј (Р±РµР· СѓРєР°Р·Р°РЅРёСЏ РїР°СЂР°РјРµС‚СЂР° - РјРµСЂР¶РёС‚)"
+  echo "  help - выводит этот текст."
+  echo "  reset - сбрасывает локальные master и test к удаленным (без указания параметра - мержит)"
   exit
 fi
 
-echo -n "Р—Р°Р±РёСЂР°РµРј РїРѕСЃР»РµРґРЅРёРµ РёРјР·РјРµРЅРµРЅРёСЏ РёР· СЂРµРїРѕР·РёС‚РѕСЂРёСЏ"
-git fetch -t origin 1>>$LOG_FILE 2>>$LOG_FILE || echo "... РћС€РёР±РєР°" && echo "...РћРє"
+echo -n "Забираем последние имзменения из репозитория"
+git fetch -t origin 1>>$LOG_FILE 2>>$LOG_FILE || echo "... Ошибка" && echo "...Ок"
 
 if [ "$1" = "reset" ]; then
-  echo -n "РџРµСЂРµС…РѕРґРёРј РІ РІРµС‚РєСѓ master"
-  git checkout master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "РЎР±СЂР°СЃС‹РІР°РµРј Р»РѕРєР°Р»СЊРЅС‹Р№ master Рє СѓРґР°Р»РµРЅРЅРѕРјСѓ"
-  git reset --hard origin/master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "РџРµСЂРµС…РѕРґРёРј РІ РІРµС‚РєСѓ test"
-  git checkout test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "РЎР±СЂР°СЃС‹РІР°РµРј Р»РѕРєР°Р»СЊРЅС‹Р№ test Рє СѓРґР°Р»РµРЅРЅРѕРјСѓ"
-  git reset --hard origin/test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
+  echo -n "Переходим в ветку master"
+  git checkout master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Сбрасываем локальный master к удаленному"
+  git reset --hard origin/master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Переходим в ветку test"
+  git checkout test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Сбрасываем локальный test к удаленному"
+  git reset --hard origin/test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
 else
-  echo -n "РџРµСЂРµС…РѕРґРёРј РІ РІРµС‚РєСѓ master"
-  git checkout master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "Р’РјРµСЂР¶РёРІР°РµРј СѓРґР°Р»РµРЅРЅС‹Р№ master РІ Р»РѕРєР°Р»СЊРЅС‹Р№"
-  git merge origin/master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "РџРµСЂРµС…РѕРґРёРј РІ РІРµС‚РєСѓ test"
-  git checkout test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
-  echo -n "Р’РјРµСЂР¶РёРІР°РµРј СѓРґР°Р»РµРЅРЅС‹Р№ test РІ Р»РѕРєР°Р»СЊРЅС‹Р№"
-  git merge origin/test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...РћРє" || echo "... РћС€РёР±РєР°"
+  echo -n "Переходим в ветку master"
+  git checkout master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Вмерживаем удаленный master в локальный"
+  git merge origin/master 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Переходим в ветку test"
+  git checkout test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
+  echo -n "Вмерживаем удаленный test в локальный"
+  git merge origin/test 1>>$LOG_FILE 2>>$LOG_FILE && echo "...Ок" || echo "... Ошибка"
 fi

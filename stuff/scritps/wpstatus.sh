@@ -3,23 +3,23 @@
 LOG_FILE=$HOME"/.git.logs"
 
 if [ "$1" = "help" ]; then
-  echo "РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ: status.sh [branch|help]"
+  echo "Использование: status.sh [branch|help]"
   echo ""
-  echo "  help - РІС‹РІРѕРґРёС‚ СЌС‚РѕС‚ С‚РµРєСЃС‚."
-  echo "  branch - РёРјСЏ РІРµС‚РєРё, СЃРѕСЃС‚РѕСЏРЅРёРµ РєРѕС‚РѕСЂРѕР№ РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ."
+  echo "  help - выводит этот текст."
+  echo "  branch - имя ветки, состояние которой проверяется."
   exit
 fi
 
 if [ -n "$1" ]; then
   branch="$1"
-  echo -n "Р’РµС‚РєР° $branch РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚?.."
+  echo -n "Ветка $branch присутствует?.."
   if [ `git branch | grep $branch | wc -c` -gt 0 ]; then
-    echo "Р”Р°"
+    echo "Да"
     commits=`git rev-list origin/master..$branch | wc -l`
     if [ "$commits" -gt 0 ]; then
-      echo "Р’РµС‚РєР° $branch РЅРµ РІРјРµР¶РµРЅР° РІ РјР°СЃС‚РµСЂ (СЂР°Р·Р»РёС‡Р°РµС‚СЃСЏ РЅР° $commits РєРѕРјРјРёС‚РѕРІ)"
+      echo "Ветка $branch не вмежена в мастер (различается на $commits коммитов)"
     else
-      echo "Р’РµС‚РєР° $branch РІРјРµР¶РµРЅР° РІ РјР°СЃС‚РµСЂ"
+      echo "Ветка $branch вмежена в мастер"
     fi
   fi
 fi
