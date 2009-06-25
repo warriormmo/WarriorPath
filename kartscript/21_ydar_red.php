@@ -1,7 +1,6 @@
 <?php
 if ($battle['dist'] > 0) {
   $log = $log . "Слишком далеко до противника. " . $first . " промахнулся.\n"; // Проверка на дистанцию
-  
 } else {
   $hit = 0;
   $damage = 0; //инициализация переменных
@@ -47,7 +46,6 @@ if ($battle['dist'] > 0) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
       } //запись ранения
-      
     } else {
       $log = $log . $second . " отбил удар. \n";
     }

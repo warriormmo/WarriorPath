@@ -80,7 +80,6 @@ if ($battle['dist'] == 2) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
       } //запись ранения
-      
     } else {
       $log = $log . $second . " отбил удар, а " . $first . " теряет равновесие \n";
       $enemy['moddeystvie']--;

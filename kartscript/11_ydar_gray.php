@@ -1,7 +1,6 @@
 <?php
 if ($battle['dist'] == 2) {
   $log = $log . "Слишком далеко до противника. " . $first . " промахнулся.\n"; // Проверка на дистанцию
-  
 } else {
   $dopmoddist = 0;
   if ($battle['dist'] == 0) // слишком близко
@@ -74,12 +73,10 @@ if ($battle['dist'] == 2) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
       } //запись ранения
-      
     } else {
       $log = $log . $second . " отбил удар. \n";
       //удаление всех модификаторов кроме стоек и техник
       include ("delmods.php"); //ВЫТЕРАЕМ моды нафиг
-      
     }
   }
 }
