@@ -27,7 +27,7 @@
     $my = db_fetch();
     
     db_query('INSERT INTO `UserHend` VALUES ('.AP.$my['id'].AP.', "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");');
-    db_query('INSERT INTO `UserKoloda` VALUES ('.AP.$my['id'].AP.', "10_ydar", "12_ydar", "17_mgnoven", "18_ydar", "19_mgnoven", "20_ydar", "21_ydar", "22_ydar", "23_ydar", "24_ydar", "25_ydar", "26_ydar", "27_ydar", "28_ydar", "3_mgnoven", "34_ydar", "35_mgnoven", "36_mgnoven", "37_mgnoven", "38_mgnoven", "39_ydar", "4_mgnoven", "40_mgnoven", "41_mgnoven", "42_mgnoven", "42_mgnoven", "43_ydar", "5_mgnoven", "6_ydar", "9_ydar");');
+    db_query('INSERT INTO `UserKoloda` VALUES ('.AP.$my['id'].AP.', "10_ydar_gray", "12_ydar_gray", "17_mgnoven_gray", "18_ydar_gray", "19_mgnoven_gray", "20_ydar_red", "21_ydar_red", "22_ydar_red", "23_ydar_red", "24_ydar_red", "25_ydar_red", "26_ydar_red", "27_ydar_red", "28_ydar_red", "3_mgnoven_gray", "34_ydar_red", "35_mgnoven_red", "36_mgnoven_red", "37_mgnoven_red", "38_mgnoven_red", "39_ydar_red", "4_mgnoven_gray", "40_mgnoven_red", "41_mgnoven_red", "42_mgnoven_red", "42_mgnoven_red", "43_ydar_red", "5_mgnoven_gray", "6_ydar_gray", "9_ydar_gray");');
 
 
     echo('ok=1');
