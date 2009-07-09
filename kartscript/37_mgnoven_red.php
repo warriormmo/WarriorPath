@@ -12,7 +12,7 @@ if ($schoolred > 0) //карта требует синюю школу
 {
   $log = $log . $first . " использует технику Гнев воина.\n";
   db_query('DELETE FROM `modificators` WHERE (`id`=' . $id . ') and (`technic`=1)'); //вытераем предыдущую технику
-  db_query('UPDATE `game_user` SET `technic` = "37_mgnoven" WHERE id = ' . $id . ' LIMIT 1;'); //занесение в базу в технику
+  db_query('UPDATE `game_user` SET `technic` = "37_mgnoven_red" WHERE id = ' . $id . ' LIMIT 1;'); //занесение в базу в технику
   db_query('INSERT INTO `modificators`(id,time,nadamage,napopodanie,nayklonenie,nablok,technic)  VALUES (' . $id . ',1000,1,1,-1,-1,1)'); //занесение в моды
   
 } else {

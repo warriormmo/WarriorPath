@@ -144,4 +144,5 @@ if ($my['Smert'] != 1) {
 } else {
   $log = $log . $enemy['name'] . " Жестоко пинает безжизненное тело \n";
 }
+if (($mymodraneniya+$mymods['beschuvstvie'])<=0){$mymodraneniya=$mymodraneniya+$mymods['beschuvstvie'];}
 ?>

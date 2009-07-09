@@ -15,8 +15,9 @@ $my = db_fetch();
 if (empty($my)) {
   goto_error_global('Пользователь не найден в базе!');
 }
-db_query('SELECT * FROM Hend WHERE id=' . $my['id'] . ' ;');
+db_query('SELECT hend FROM Hend WHERE id=' . $my['id'] . ' ;');
 $hend = db_fetch();
+$hend = unserialize($hend['hend']);
 db_query('SELECT * FROM game_battle WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
 $battle = db_fetch();
 if (!$battle) {
@@ -37,46 +38,41 @@ if ((time() - ($enemy['lasttime']) > 240) & (($my['Hod'] == 2) || ($my['Hod'] ==
   $my['Hod'] = 21;
   db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
-  //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
   db_query('DELETE  FROM `modificators` WHERE (`id`=' . $my['id'] . ') OR (`id`=' . $enemy['id'] . ')');
 }
 // движение
-if ($hod == 4) {
+if (($hod == 4)&(($my['Hod'] == 1)||($my['Hod']==8))) {
   if ($battle['dist'] == 1) {
     db_query('UPDATE game_battle SET `dist`=2 WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
-    $my['moddeystvie']--;
+    if ($my['technic']<>"5_mgnoven_gray"){$my['moddeystvie']--;}
     db_query('UPDATE game_user SET `moddeystvie`=' . $my['moddeystvie'] . ' WHERE id=' . $my['id'] . ' LIMIT 1;');
   }
   if ($battle['dist'] == 0) {
     db_query('UPDATE game_battle SET `dist`=1 WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
-    $my['moddeystvie']--;
+    if ($my['technic']<>"5_mgnoven_gray"){$my['moddeystvie']--;}
     db_query('UPDATE game_user SET `moddeystvie`=' . $my['moddeystvie'] . ' WHERE id=' . $my['id'] . ' LIMIT 1;');
   }
 }
-if ($hod == 5) {
+if (($hod == 5)&(($my['Hod'] == 1)||($my['Hod']==8))) {
   if ($battle['dist'] == 2) {
     db_query('UPDATE game_battle SET `dist`=1 WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
-    $my['moddeystvie']--;
+    if ($my['technic']<>"5_mgnoven_gray"){$my['moddeystvie']--;}
     db_query('UPDATE game_user SET `moddeystvie`=' . $my['moddeystvie'] . ' WHERE id=' . $my['id'] . ' LIMIT 1;');
   }
   if ($battle['dist'] == 1) {
     db_query('UPDATE game_battle SET `dist`=0 WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
-    $my['moddeystvie']--;
+    if ($my['technic']<>"5_mgnoven_gray"){$my['moddeystvie']--;}
     db_query('UPDATE game_user SET `moddeystvie`=' . $my['moddeystvie'] . ' WHERE id=' . $my['id'] . ' LIMIT 1;');
   }
 }
 //удаление боя;
 if (($my['Hod'] == 21) & ($hod == 3)) {
-  //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
-  //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
   db_query('UPDATE game_battle SET `end`=1,`WinUser`=' . AP . $my['name'] . AP . ',`LoseUser`= ' . AP . $enemy['name'] . AP . ' WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
   db_query('DELETE  FROM `modificators` WHERE (`id`=' . $my['id'] . ') OR (`id`=' . $enemy['id'] . ')');
 }
 if (($my['Hod'] == 20) & ($hod == 3)) {
-  //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$my['id'].' LIMIT 1;');
-  //db_query('UPDATE `game_user` SET `Hod` = "0" WHERE id = '.$enemy['id'].' LIMIT 1;');
   db_query('UPDATE game_battle SET `end`=1,`WinUser`=' . AP . $enemy['name'] . AP . ',`LoseUser`= ' . AP . $my['name'] . AP . ' WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
   db_query('DELETE  FROM `modificators` WHERE (`id`=' . $my['id'] . ') OR (`id`=' . $enemy['id'] . ')');
 }
@@ -86,7 +82,6 @@ if ($my['Smert'] == 1) {
   $my['Hod'] = 20;
   db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
-  //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0  WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
   db_query('DELETE  FROM `modificators` WHERE (`id`=' . $my['id'] . ') OR (`id`=' . $enemy['id'] . ')');
@@ -95,7 +90,6 @@ if ($my['Smert'] == 1) {
 if (($hod == 2) & ($my['Hod'] != 0) & ($enemy['Hod'] != 0)) {
   db_query('UPDATE `game_user` SET `Hod` = "20" WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `Hod` = "21" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
-  //db_query('UPDATE game_battle SET `end`=1,`WinUser`='.AP.$enemy['name'].AP.',`LoseUser`= '.AP.$my['name'].AP.' WHERE (user1='.$my['id'].' OR user2='.$my['id'].')AND(`end`!=1) LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = ' . $my['id'] . ' LIMIT 1;');
   db_query('UPDATE `game_user` SET `lasthod` = "",`carapina`=0,`legkoe`=0,`srednee`=0,`tyageloe`=0,`smertelnoe`=0,`smert`=0,`stoyka` = "",`technic` = "",`modranenie`=0,`moddeystvie`=0   WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
   db_query('DELETE  FROM `modificators` WHERE (`id`=' . $my['id'] . ') OR (`id`=' . $enemy['id'] . ')');
@@ -126,51 +120,53 @@ if (($my['Hod'] == 0) & ($enemy['Hod'] == 0)) {
   //Сортируем руку и берем карты из колоды для 1 игрока
   db_query('SELECT * FROM koloda WHERE   id = ' . $my['id'] . ' LIMIT 1;');
   $koloda = db_fetch();
-  $arr = array();
+  $koloda = unserialize($koloda['koloda']);
+  $arren = array();
   db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
-  $hend = db_fetch();
-  //удаляем карты из начала, если не получается добрать карт
+  $ehend = db_fetch();
+  $ehend = unserialize($ehend['hend']);
   $j = 0;
   for ($i = 1; $i <= ($my['Obrazovanie'] * 3); $i++) {
-    if ($hend[$i] <> "") {
+    if ($ehend[$i] <> "") {
       $j++;
     }
   }
-  $sbros = $my['Obrazovanie'] - (($my['Obrazovanie'] * 3) - $j);
-  for ($i = 1; $i <= ($sbros); $i++) {
-    $hend[$i] = "";
+  $sbros = $enemy['Obrazovanie'] - (($my['Obrazovanie'] * 3) - $j);
+  for ($i = 1; $i <= $sbros; $i++) {
+    $ehend[$i] = "";
   }
-  //сортируе руку убирая пустые
   $j = 1;
-  for ($i = 1; $i <= ($my['Obrazovanie'] * 3); $i++) {
-    if ($hend[$i] <> "") {
-      $arr[$j] = $hend[$i];
+  for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
+    if ($ehend[$i] <> "") {
+      $arren[$j] = $ehend[$i];
       $j++;
     }
   }
   for ($i = 1; $i <= $my['Obrazovanie']; $i++) {
-    $arr[$j] = $koloda[rand(1, 30) ];
-    // $koloda[$i]="";
+    $arren[$j] = $koloda[rand(1, count($koloda)) ];
+   // $koloda[$i]="";
     $j++;
-    db_query('UPDATE koloda SET `' . $i . '` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+   
   }
-  for ($i = 1; $i <= ($my['Obrazovanie'] * 3); $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-  $arr = array();
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arren).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  $arren = array();
   $j = 1;
-  for ($i = 1; $i <= 30; $i++) {
+  for ($i = 1; $i <= count($koloda); $i++) {
     if ($koloda[$i] <> "") {
-      $arr[$j] = $koloda[$i];
+      $arren[$j] = $koloda[$i];
       $j++;
     }
   }
-  for ($i = 1; $i <= 30; $i++) db_query('UPDATE `koloda` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  db_query('UPDATE `koloda` SET `koloda` = '.AP.serialize($arren).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');
   //конец сортировки карт!!!
   //Сортируем руку и берем карты из колоды для 2 игрока
   db_query('SELECT * FROM koloda WHERE   id = ' . $enemy['id'] . ' LIMIT 1;');
   $koloda = db_fetch();
-  $arr = array();
+  $koloda = unserialize($koloda['koloda']);
+  $arren = array();
   db_query('SELECT * FROM Hend WHERE (id=' . $enemy['id'] . ') LIMIT 1;');
   $ehend = db_fetch();
+  $ehend = unserialize($ehend['hend']);
   $j = 0;
   for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
@@ -184,26 +180,26 @@ if (($my['Hod'] == 0) & ($enemy['Hod'] == 0)) {
   $j = 1;
   for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
-      $arr[$j] = $ehend[$i];
+      $arren[$j] = $ehend[$i];
       $j++;
     }
   }
   for ($i = 1; $i <= $enemy['Obrazovanie']; $i++) {
-    $arr[$j] = $koloda[rand(1, 30) ];
-    // $koloda[$i]="";
+    $arren[$j] = $koloda[rand(1, count($koloda)) ];
+   // $koloda[$i]="";
     $j++;
-    db_query('UPDATE koloda SET `' . $i . '` = "" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
+   
   }
-  for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
-  $arr = array();
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arren).AP.'  WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
+  $arren = array();
   $j = 1;
-  for ($i = 1; $i <= 30; $i++) {
+  for ($i = 1; $i <= count($koloda); $i++) {
     if ($koloda[$i] <> "") {
-      $arr[$j] = $koloda[$i];
+      $arren[$j] = $koloda[$i];
       $j++;
     }
   }
-  for ($i = 1; $i <= 30; $i++) db_query('UPDATE `koloda` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
+  db_query('UPDATE `koloda` SET `koloda` = '.AP.serialize($arren).AP.'  WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
   //конец сортировки карт!!!
   
 }
@@ -229,16 +225,16 @@ if (($hod == 1) & ($my['Hod'] == 1) & (($myhod[1] != 0) || ($myhod[2] != 0) || (
     $lasthod = $lasthod . $hend[$myhod[$i]] . ";";
   }
   db_query('UPDATE `game_user` SET `lasthod` = "' . $lasthod . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  
   //Стирание использованных карт из руки
   for ($i = 1; $i < 5; $i++) {
     if ($myhod[$i] != 0) {
-      db_query('UPDATE `Hend` SET `' . $myhod[$i] . '` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-    }
+    $hend[$myhod[$i]]="";
+      }
   }
+  
   //сортировка руки и запись руки уже с удаленными картами из нее
   $arr = array();
-  db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
-  $hend = db_fetch();
   $j = 1;
   for ($i = 1; $i < 16; $i++) {
     if ($hend[$i] <> "") {
@@ -246,7 +242,7 @@ if (($hod == 1) & ($my['Hod'] == 1) & (($myhod[1] != 0) || ($myhod[2] != 0) || (
       $j++;
     }
   }
-  for ($i = 1; $i < 16; $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arr).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');
 }
 //ФАЗА 2
 if (($hod == 1) & ($my['Hod'] == 4)) {
@@ -260,16 +256,15 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   }
   db_query('UPDATE `game_user` SET `lasthod` = "' . $lasthod . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
   //include ($hend[$myhod[1]].".php");
-  //Стирание использованных карт из руки
+   //Стирание использованных карт из руки
   for ($i = 1; $i < 5; $i++) {
     if ($myhod[$i] != 0) {
-      db_query('UPDATE `Hend` SET `' . $myhod[$i] . '` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-    }
+    $hend[$myhod[$i]]="";
+      }
   }
+  
   //сортировка руки и запись руки уже с удаленными картами из нее
   $arr = array();
-  db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
-  $hend = db_fetch();
   $j = 1;
   for ($i = 1; $i < 16; $i++) {
     if ($hend[$i] <> "") {
@@ -277,10 +272,12 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
       $j++;
     }
   }
-  for ($i = 1; $i < 16; $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-  //РАСЧЕТ БОЯ
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arr).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');  //РАСЧЕТ БОЯ
   //открытие лог файла
   $log = $battle['log'];
+  $my['resultat']="";
+  $enemy['resultat']="";
+  
   $myhod = split(";", $lasthod);
   $enemyhod = split(";", $enemy['lasthod']);
   if (($myhod[0] != "") or ($enemyhod[0] != "")) {
@@ -339,8 +336,9 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   if ($enemyhod[3] != "") {
     include ("kartscript/" . $enemyhod[3] . ".php");
   }
-  db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] . ' WHERE id=' . $my['id'] . '  LIMIT 1;');
-  db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] . ' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($hend).AP.' WHERE id = '.$my['id'].' LIMIT 1;'); //контузия
+  db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] .',`resultat` = '.AP.$my['resultat'].AP. ' WHERE id=' . $my['id'] . '  LIMIT 1;');
+  db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] .',`resultat` = '.AP.$enemy['resultat'].AP. ' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
   db_query('UPDATE `game_battle` SET `log` = "' . $log . '" WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
   ///Конец расчета боя
   
@@ -383,13 +381,12 @@ if (($hod == 1) & ($my['Hod'] == 8) & (($myhod[1] != 0) || ($myhod[2] != 0) || (
   //Стирание использованных карт из руки
   for ($i = 1; $i < 5; $i++) {
     if ($myhod[$i] != 0) {
-      db_query('UPDATE `Hend` SET `' . $myhod[$i] . '` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-    }
+    $hend[$myhod[$i]]="";
+      }
   }
+  
   //сортировка руки и запись руки уже с удаленными картами из нее
   $arr = array();
-  db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
-  $hend = db_fetch();
   $j = 1;
   for ($i = 1; $i < 16; $i++) {
     if ($hend[$i] <> "") {
@@ -397,7 +394,7 @@ if (($hod == 1) & ($my['Hod'] == 8) & (($myhod[1] != 0) || ($myhod[2] != 0) || (
       $j++;
     }
   }
-  for ($i = 1; $i < 16; $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arr).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');
 }
 //Пропуск хода 2м игроком
 if (($hod == 1) & ($my['Hod'] == 8) & ($myhod[1] == 0) & ($myhod[2] == 0) & ($myhod[3] == 0) & ($myhod[4] == 0)) {
@@ -421,16 +418,15 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
     $lasthod = $lasthod . $hend[$myhod[$i]] . ";";
   }
   db_query('UPDATE `game_user` SET `lasthod` = "' . $lasthod . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-  //Стирание использованных карт из руки
+   //Стирание использованных карт из руки
   for ($i = 1; $i < 5; $i++) {
     if ($myhod[$i] != 0) {
-      db_query('UPDATE `Hend` SET `' . $myhod[$i] . '` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;');
-    }
+    $hend[$myhod[$i]]="";
+      }
   }
+  
   //сортировка руки и запись руки уже с удаленными картами из нее
   $arr = array();
-  db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
-  $hend = db_fetch();
   $j = 1;
   for ($i = 1; $i < 16; $i++) {
     if ($hend[$i] <> "") {
@@ -438,10 +434,12 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
       $j++;
     }
   }
-  for ($i = 1; $i < 16; $i++) db_query('UPDATE `Hend` SET `' . $i . '` = "' . $arr[$i] . '" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($arr).AP.'  WHERE id = ' . $my['id'] . ' LIMIT 1;');
   //РАСЧЕТ БОЯ
   //открытие лог файла
   $log = $battle['log'];
+  $my['resultat']="";
+  $enemy['resultat']="";
   //Тут нужно написать обработчик с инклудами
   //$my['lasthod']=$lasthod;
   $myhod = split(";", $lasthod);
@@ -502,8 +500,9 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
   if ($enemyhod[3] != "") {
     include ("kartscript/" . $enemyhod[3] . ".php");
   }
-  db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] . ' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
-  db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] . ' WHERE id=' . $my['id'] . '  LIMIT 1;');
+  db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($hend).AP.' WHERE id = '.$my['id'].' LIMIT 1;'); //контузия
+  db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] .',`resultat` = '.AP.$enemy['resultat'].AP.' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
+  db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] .',`resultat` = '.AP.$my['resultat'].AP. ' WHERE id=' . $my['id'] . '  LIMIT 1;');
   db_query('UPDATE `game_battle` SET `log` = "' . $log . '" WHERE (user1=' . $my['id'] . ' OR user2=' . $my['id'] . ')AND(`end`!=1) LIMIT 1;');
   ///Конец расчета боя
   
@@ -545,6 +544,7 @@ $battle = db_fetch();
 include ("mods.php");
 db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
 $hend = db_fetch();
+$hend = unserialize($hend['hend']);
 echo "kart=";
 for ($i = 0; $i <= ($my['Obrazovanie'] * 3) + 1; $i++) {
   if ($hend[$i] <> "") echo '' . $hend[$i] . ';';
@@ -568,9 +568,11 @@ echo "&mysrednee=" . $my['Srednee'];
 echo "&mytyageloe=" . $my['Tyageloe'];
 echo "&mysmertelnoe=" . $my['Smertelnoe'];
 echo "&mysmert=" . $my['Smert'];
-echo "&mymods=" . "На действие;" . $my['moddeystvie'] . ";" . "На ранение;" . $my['modranenie'] . ";" . "На поподание;" . $mymods['napopodanie'] . ";" . "На повреждение;" . $mymods['nadamage'] . ";" . "На уклонение;" . $mymods['nayklonenie'] . ";" . "На блок;" . $mymods['nablok'] . ";" . "На броню;" . $mymods['naarmor'] . ";" . "На Поп ДУ;" . $mymods['napopdaludaru'] . ";" . "На Пов ДУ;" . $mymods['napovdaludaru'] . ";" . "На Поп БУ;" . $mymods['napopblgudaru'] . ";" . "На Пов БУ;" . $mymods['napovblgudaru'] . ";" . "На Поп ДУ рукой ;" . $mymods['napopdaludarrukoy'] . ";" . "На Пов ДУ рукой ;" . $mymods['napovdaludarrukoy'] . ";" . "На Поп БУ рукой ;" . $mymods['napopblgudarrukoy'] . ";" . "На Пов БУ рукой ;" . $mymods['napovblgudarrukoy'] . ";" . "На Поп ДУ ногой ;" . $mymods['napopdaludarnogoy'] . ";" . "На Пов ДУ ногой ;" . $mymods['napovdaludarnogoy'] . ";" . "На Поп БУ ногой ;" . $mymods['napopblgudarnogoy'] . ";" . "На Пов БУ ногой ;" . $mymods['napovblgudarnogoy'] . ";" . "На Поп в голову;" . $mymods['napopvgolovu'] . ";" . "На Пов в голову;" . $mymods['napovvgolovu'] . ";" . "На Поп в руку;" . $mymods['napopvruku'] . ";" . "На Пов в руку;" . $mymods['napovvruku'] . ";" . "На Поп в торс;" . $mymods['napopvtors'] . ";" . "На Пов в торс;" . $mymods['napovvtors'] . ";" . "На Поп в ногу;" . $mymods['napopvnogu'] . ";" . "На Пов в ногу;" . $mymods['napovvnogu'] . ";";
+echo "&mymods=" . "На действие;" . $my['moddeystvie'] . ";" . "На ранение;" . $my['modranenie'] . ";" . "На поподание;" . $mymods['napopodanie'] . ";" . "На повреждение;" . $mymods['nadamage'] . ";" . "На уклонение;" . $mymods['nayklonenie'] . ";" . "На блок;" . $mymods['nablok'] . ";" . "На броню;" . $mymods['naarmor'] . ";" . "На Поп ДУ;" . $mymods['napopdaludaru'] . ";" . "На Пов ДУ;" . $mymods['napovdaludaru'] . ";" . "На Поп БУ;" . $mymods['napopblgudaru'] . ";" . "На Пов БУ;" . $mymods['napovblgudaru'] . ";" . "На Поп ДУ рукой ;" . $mymods['napopdaludarrukoy'] . ";" . "На Пов ДУ рукой ;" . $mymods['napovdaludarrukoy'] . ";" . "На Поп БУ рукой ;" . $mymods['napopblgudarrukoy'] . ";" . "На Пов БУ рукой ;" . $mymods['napovblgudarrukoy'] . ";" . "На Поп ДУ ногой ;" . $mymods['napopdaludarnogoy'] . ";" . "На Пов ДУ ногой ;" . $mymods['napovdaludarnogoy'] . ";" . "На Поп БУ ногой ;" . $mymods['napopblgudarnogoy'] . ";" . "На Пов БУ ногой ;" . $mymods['napovblgudarnogoy'] . ";" . "На Поп в голову;" . $mymods['napopvgolovu'] . ";" . "На Пов в голову;" . $mymods['napovvgolovu'] . ";" . "На Поп в руку;" . $mymods['napopvruku'] . ";" . "На Пов в руку;" . $mymods['napovvruku'] . ";" . "На Поп в торс;" . $mymods['napopvtors'] . ";" . "На Пов в торс;" . $mymods['napovvtors'] . ";" . "На Поп в ногу;" . $mymods['napopvnogu'] . ";" . "На Пов в ногу;" . $mymods['napovvnogu'] . ";" . "Бесчувствие;" . $mymods['beschuvstvie'] . ";". "Бесстрашие;" . $mymods['besstrashie'] . ";". "Страх;" . $mymods['strah'] . ";";
 echo "&myskillssila=" . "БОКС;" . $my['Boks'] . ";";
 echo "&myskillslovkost=" . "ШК(КРАСНАЯ);" . $my['schoolred'] . ";" . "ШК(СИНЯЯ);" . $my['schoolblue'] . ";" . "ШК(ЗЕЛЕНАЯ);" . $my['schoolgreen'] . ";" . "ШК(БЕЛАЯ);" . $my['schoolwhite'] . ";" . "ШК(ЧЕРНАЯ);" . $my['schoolblack'] . ";";
+echo "&myresultat=".$my['resultat'];
+echo "&enemyresultat=".$enemy['resultat'];
 echo "&enemyname=" . $enemy['name'];
 echo "&enemysila=" . $enemy['Sila'];
 echo "&enemylovkost=" . $enemy['Lovkost'];
@@ -583,7 +585,7 @@ echo "&enemysrednee=" . $enemy['Srednee'];
 echo "&enemytyageloe=" . $enemy['Tyageloe'];
 echo "&enemysmertelnoe=" . $enemy['Smertelnoe'];
 echo "&enemysmert=" . $enemy['Smert'];
-echo "&enemymods=" . "На действие;" . $enemy['moddeystvie'] . ";" . "На ранение;" . $enemy['modranenie'] . ";" . "На поподание;" . $enemymods['napopodanie'] . ";" . "На повреждение;" . $enemymods['nadamage'] . ";" . "На уклонение;" . $enemymods['nayklonenie'] . ";" . "На блок;" . $enemymods['nablok'] . ";" . "На броню;" . $enemymods['naarmor'] . ";" . "На Поп ДУ;" . $enemymods['napopdaludaru'] . ";" . "На Пов ДУ;" . $enemymods['napovdaludaru'] . ";" . "На Поп БУ;" . $enemymods['napopblgudaru'] . ";" . "На Пов БУ;" . $enemymods['napovblgudaru'] . ";" . "На Поп ДУ рукой ;" . $enemymods['napopdaludarrukoy'] . ";" . "На Пов ДУ рукой ;" . $enemymods['napovdaludarrukoy'] . ";" . "На Поп БУ рукой ;" . $enemymods['napopblgudarrukoy'] . ";" . "На Пов БУ рукой ;" . $enemymods['napovblgudarrukoy'] . ";" . "На Поп ДУ ногой ;" . $enemymods['napopdaludarnogoy'] . ";" . "На Пов ДУ ногой ;" . $enemymods['napovdaludarnogoy'] . ";" . "На Поп БУ ногой ;" . $enemymods['napopblgudarnogoy'] . ";" . "На Пов БУ ногой ;" . $enemymods['napovblgudarnogoy'] . ";" . "На Поп в голову;" . $enemymods['napopvgolovu'] . ";" . "На Пов в голову;" . $enemymods['napovvgolovu'] . ";" . "На Поп в руку;" . $enemymods['napopvruku'] . ";" . "На Пов в руку;" . $enemymods['napovvruku'] . ";" . "На Поп в торс;" . $enemymods['napopvtors'] . ";" . "На Пов в торс;" . $enemymods['napovvtors'] . ";" . "На Поп в ногу;" . $enemymods['napopvnogu'] . ";" . "На Пов в ногу;" . $enemymods['napovvnogu'] . ";";
+echo "&enemymods=" . "На действие;" . $enemy['moddeystvie'] . ";" . "На ранение;" . $enemy['modranenie'] . ";" . "На поподание;" . $enemymods['napopodanie'] . ";" . "На повреждение;" . $enemymods['nadamage'] . ";" . "На уклонение;" . $enemymods['nayklonenie'] . ";" . "На блок;" . $enemymods['nablok'] . ";" . "На броню;" . $enemymods['naarmor'] . ";" . "На Поп ДУ;" . $enemymods['napopdaludaru'] . ";" . "На Пов ДУ;" . $enemymods['napovdaludaru'] . ";" . "На Поп БУ;" . $enemymods['napopblgudaru'] . ";" . "На Пов БУ;" . $enemymods['napovblgudaru'] . ";" . "На Поп ДУ рукой ;" . $enemymods['napopdaludarrukoy'] . ";" . "На Пов ДУ рукой ;" . $enemymods['napovdaludarrukoy'] . ";" . "На Поп БУ рукой ;" . $enemymods['napopblgudarrukoy'] . ";" . "На Пов БУ рукой ;" . $enemymods['napovblgudarrukoy'] . ";" . "На Поп ДУ ногой ;" . $enemymods['napopdaludarnogoy'] . ";" . "На Пов ДУ ногой ;" . $enemymods['napovdaludarnogoy'] . ";" . "На Поп БУ ногой ;" . $enemymods['napopblgudarnogoy'] . ";" . "На Пов БУ ногой ;" . $enemymods['napovblgudarnogoy'] . ";" . "На Поп в голову;" . $enemymods['napopvgolovu'] . ";" . "На Пов в голову;" . $enemymods['napovvgolovu'] . ";" . "На Поп в руку;" . $enemymods['napopvruku'] . ";" . "На Пов в руку;" . $enemymods['napovvruku'] . ";" . "На Поп в торс;" . $enemymods['napopvtors'] . ";" . "На Пов в торс;" . $enemymods['napovvtors'] . ";" . "На Поп в ногу;" . $enemymods['napopvnogu'] . ";" . "На Пов в ногу;" . $enemymods['napovvnogu'] . ";". "Бесчувствие;" . $enemymods['beschuvstvie'] . ";". "Бесстрашие;" . $enemymods['besstrashie'] . ";". "Страх;" . $enemymods['strah'] . ";";
 echo "&enemyskillssila=" . "БОКС;" . $enemy['Boks'] . ";";
 echo "&enemyskillslovkost=" . "ШК(КРАСНАЯ);" . $enemy['schoolred'] . ";" . "ШК(СИНЯЯ);" . $enemy['schoolblue'] . ";" . "ШК(ЗЕЛЕНАЯ);" . $enemy['schoolgreen'] . ";" . "ШК(БЕЛАЯ);" . $enemy['schoolwhite'] . ";" . "ШК(ЧЕРНАЯ);" . $enemy['schoolblack'] . ";";
 echo "&dist=" . $battle['dist'];

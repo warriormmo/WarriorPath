@@ -2,6 +2,7 @@
 if ($battle['dist'] == 2) {
   $log = $log . "Слишком далеко до противника. " . $first . " промахнулся, и теряет равновесие.\n"; // Проверка на дистанцию
   $enemy['moddeystvie']--;
+  $enemy['resultat']=$enemy['resultat']."2;";
 } else {
   $dopmoddist = 0;
   if ($battle['dist'] == 0) // слишком близко
@@ -32,7 +33,7 @@ if ($battle['dist'] == 2) {
   if ($enemy['schoolblack'] > $maxschool) {
     $maxschool = $enemy['schoolblack'];
   }
-  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarnogoy'] + $enemymods['napopvtors'] - 2; //кол кубиков на попадание с учетом всех модов -3 от карты
+  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarnogoy'] + $enemymods['napopvtors']+$enemymods['nadeystvie'] - 2; //кол кубиков на попадание с учетом всех модов -3 от карты
   if ($hitcount > 0) {
     for ($i = 1; $i <= $hitcount; $i++) {
       $hit = $hit + rand(1, 6);
@@ -44,10 +45,11 @@ if ($battle['dist'] == 2) {
   $log = $log . "На выполнение - " . $hit . " \n";
   if ($hit < 3) {
     $log = $log . $first . " не в состоянии выполнить удар " . $second . ". \n";
+    $enemy['resultat']=$enemy['resultat']."2;";
   } //условие вполнения удара
   else { // описание последствий удара
     $log = $log . $first . " бьет в грудь " . $second . ". \n";
-    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
+    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie']+$mymods['nadeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
     for ($i = 1; $i <= $blokcount; $i++) {
       $blok = $blok + rand(1, 6);
     } //бросок кубиков
@@ -80,9 +82,11 @@ if ($battle['dist'] == 2) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
       } //запись ранения
+      $enemy['resultat']=$enemy['resultat']."1;";
     } else {
       $log = $log . $second . " отбил удар, а " . $first . " теряет равновесие \n";
       $enemy['moddeystvie']--;
+      $enemy['resultat']=$enemy['resultat']."2;";
     }
   }
 }

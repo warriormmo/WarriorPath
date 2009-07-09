@@ -25,7 +25,7 @@ if ($battle['dist'] > 0) {
   if ($enemy['schoolblack'] > $maxschool) {
     $maxschool = $enemy['schoolblack'];
   }
-  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarrukoy'] + $enemymods['napopvgolovu'] - 2; //кол кубиков на попадание с учетом всех модов -3 от карты
+  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie']+$enemymods['nadeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarrukoy'] + $enemymods['napopvgolovu'] - 2; //кол кубиков на попадание с учетом всех модов -3 от карты
   if ($hitcount > 0) {
     for ($i = 1; $i <= $hitcount; $i++) {
       $hit = $hit + rand(1, 6);
@@ -40,7 +40,7 @@ if ($battle['dist'] > 0) {
   } //условие вполнения удара
   else { // описание последствий удара
     $log = $log . $first . " бьет в голову " . $second . ". \n";
-    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
+    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie']+$mymods['nadeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
     for ($i = 1; $i <= $blokcount; $i++) {
       $blok = $blok + rand(1, 6);
     } //бросок кубиков
@@ -58,7 +58,21 @@ if ($battle['dist'] > 0) {
       } //бросок кубиков
       $log = $log . $first . " попал \n" . "Сила удара " . $damagecount . " кубиков, результат " . $damage . "\n";
       include ("myhealth.php"); //расчет ранений в зависимости от дамага
-      db_query('UPDATE `Hend` SET `1` = "" WHERE id = ' . $my['id'] . ' LIMIT 1;'); //контузия
+       //Контузия
+      $j=0;
+      for ($i=0;$i<=count($hend);$i++)
+        { 
+          if ($hend[$i]<>"")
+            {
+              $hend[$i]="";
+              $j++;
+            }
+          if ($j>=1)
+            {
+              $i=1000;
+            }
+        }
+      //конец контузии
       $log = $log . $second . " контужен, похоже он что-то забыл. \n";
       if ($mymodraneniya < $my['modranenie']) {
         $my['modranenie'] = $mymodraneniya;

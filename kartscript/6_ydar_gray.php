@@ -32,7 +32,7 @@ if ($battle['dist'] == 2) {
   if ($enemy['schoolblack'] > $maxschool) {
     $maxschool = $enemy['schoolblack'];
   }
-  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarnogoy'] + $enemymods['napopvnogu'] - 1; //кол кубиков на попадание с учетом всех модов -3 от карты
+  $hitcount = $enemy['Lovkost'] + $maxschool + $enemy['moddeystvie']+$enemymods['nadeystvie'] + $enemy['modranenie'] + $enemymods['napopodanie'] + $dopmoddist + $enemymods['napopdaludaru'] + $enemymods['napopdaludarnogoy'] + $enemymods['napopvnogu'] - 1; //кол кубиков на попадание с учетом всех модов -3 от карты
   if ($hitcount > 0) {
     for ($i = 1; $i <= $hitcount; $i++) {
       $hit = $hit + rand(1, 6);
@@ -47,7 +47,7 @@ if ($battle['dist'] == 2) {
   } //условие вполнения удара
   else { // описание последствий удара
     $log = $log . $first . " бьет в бедро " . $second . ". \n";
-    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
+    $blokcount = $my['Sila'] + $my['Boks'] + $my['moddeystvie']+$mymods['nadeystvie'] + $my['modranenie'] + $mymods['nablok']; //кол кубиков на блок
     for ($i = 1; $i <= $blokcount; $i++) {
       $blok = $blok + rand(1, 6);
     } //бросок кубиков
