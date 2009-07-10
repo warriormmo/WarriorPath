@@ -3,8 +3,10 @@ $log = $log . $first . " Встал в Атакующую позицию .\n";
 //разбор кому пренадлежит сгранная карта
 if ($first == $my['name']) {
   $id = $my['id'];
+  $my['resultat']=$my['resultat']."3;";
 } else {
   $id = $enemy['id'];
+  $enemy['resultat']=$enemy['resultat']."3;";
 }
 //что имеено происходит при отгреше карты
 db_query('DELETE FROM `modificators` WHERE (`id`=' . $id . ') and (`stoyka`=1)'); //вытераем предыдущую стойку

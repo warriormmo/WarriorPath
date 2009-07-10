@@ -7,11 +7,13 @@ if ($first == $my['name']) {
   {
     //что имеено происходит при отгреше карты
     $log = $log . $first . " развернулся.\n";
+    $my['resultat']=$my['resultat']."3;";
     db_query('INSERT INTO `modificators`(id,time,napovdaludaru,razvorot)  VALUES (' . $id . ',1000,2,1)'); //занесение в моды
     
   }else
   {
     $log = $log . $first . " Попытался сделать двойной разворот, но не вышло.\n";
+    $my['resultat']=$my['resultat']."4;";
   }
 
 } else {
@@ -20,11 +22,13 @@ if ($first == $my['name']) {
   {
     //что имеено происходит при отгреше карты
     $log = $log . $first . " развернулся.\n";
+    $enemy['resultat']=$enemy['resultat']."3;";
     db_query('INSERT INTO `modificators`(id,time,napovdaludaru,razvorot)  VALUES (' . $id . ',1000,2,1)'); //занесение в моды
     
   }else
   {
     $log = $log . $first . " Попытался сделать двойной разворот, но не вышло.\n";
+    $enemy['resultat']=$enemy['resultat']."4;";
   }
 }
 ?>

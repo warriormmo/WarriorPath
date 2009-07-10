@@ -20,7 +20,7 @@ $dtime = time() - TIME_BATTLE;
 db_query('SELECT * FROM game_user WHERE userid=' . AP . $my['userid'] . AP . ' LIMIT 1;');
 $my = db_fetch();
 if (empty($my)) {
-  goto_error('ѕользователь не найден в базе!');
+ redirect('index.html');
 }
 // ќбновл€ем врем€ последнего посещени€ дл€ пользовател€
 db_query('UPDATE game_user SET lasttime=' . AP . time() . AP . ' WHERE id=' . $my['id'] . ' LIMIT 1;');

@@ -7,6 +7,7 @@ if ($battle['dist'] == 2) {
   {
     $log = $log . "Слишком близко к противнику. " . $first . " получает дополнительнй модификатор -2 на поподание.\n";
     $dopmoddist = - 2;
+    $enemy['resultat']=$enemy['resultat']."2;";
   }
   $hit = 0;
   $damage = 0; //инициализация переменных
@@ -43,6 +44,7 @@ if ($battle['dist'] == 2) {
   $log = $log . "На выполнение - " . $hit . " \n";
   if ($hit < 3) {
     $log = $log . $first . " не в состоянии выполнить удар " . $second . ". \n";
+    $enemy['resultat']=$enemy['resultat']."2;";
   } //условие вполнения удара
   else { // описание последствий удара
     $log = $log . $first . " бьет в голову " . $second . ". \n";
@@ -88,9 +90,12 @@ if ($battle['dist'] == 2) {
       if ($mymodraneniya < $my['modranenie']) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
+       
       } //запись ранения
+       $enemy['resultat']=$enemy['resultat']."1;";
     } else {
       $log = $log . $second . " отбил удар. \n";
+      $enemy['resultat']=$enemy['resultat']."2;";
       //удаление всех модификаторов кроме стоек и техник
       include ("delmods.php"); //ВЫТЕРАЕМ моды нафиг
     }

@@ -74,7 +74,7 @@ function check_auth()
   if (isset($_COOKIE[cookname])) {
     $my['userid'] = mysql_real_escape_string($_COOKIE[cookname]);
   } else {
-    goto_error('Вы не авторизованы в игре!');
+    redirect('index.html');
   }
 }
 // Функция рассчета времени генерации странички

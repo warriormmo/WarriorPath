@@ -9,6 +9,7 @@ if ($first == $my['name']) {
   } else {
     $rana = false;
   }
+  if (($schoolred > 0) & ($rana == true)){$my['resultat']=$my['resultat']."3;";}else{$my['resultat']=$my['resultat']."4;";}
 } else {
   $id = $enemy['id'];
   $schoolred = $enemy['schoolred'];
@@ -18,6 +19,7 @@ if ($first == $my['name']) {
   } else {
     $rana = false;
   }
+  if (($schoolred > 0) & ($rana == true)){$enemy['resultat']=$enemy['resultat']."3;";}else{$enemy['resultat']=$enemy['resultat']."4;";}
 }
 //что имеено происходит при отгреше карты
 if (($schoolred > 0) & ($rana == true)) //карта требует красную школу

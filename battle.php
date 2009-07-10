@@ -1,3 +1,22 @@
+<?php
+error_reporting(1);
+header("Expires: Mon, 1 Jul 1990 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
+$nocashe = rand(0, 100000);
+DEFINE('TIME_USER', 60); // Время активности пользователя (сек.)
+DEFINE('TIME_BATTLE', 60); // Время жизни непринятого сражения (сек.)
+// Подгружаем модуль с функциями
+require_once ('func.php');
+db_open();
+check_auth(); // Проверяем авторизан-ли пользователь
+db_query('SELECT * FROM game_user WHERE userid=' . AP . $my['userid'] . AP . ' LIMIT 1;');
+$my = db_fetch();
+if (empty($my)) {
+  redirect('index.html');
+}
+?>
 <!-- saved from url=(0013)about:internet -->
 <html lang="en">
 <head>

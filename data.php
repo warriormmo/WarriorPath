@@ -13,7 +13,7 @@ check_auth(); //проврка куков
 db_query('SELECT * FROM game_user WHERE userid=' . AP . $my['userid'] . AP . ' LIMIT 1;');
 $my = db_fetch();
 if (empty($my)) {
-  goto_error_global('Пользователь не найден в базе!');
+  redirect('index.html');
 }
 db_query('SELECT hend FROM Hend WHERE id=' . $my['id'] . ' ;');
 $hend = db_fetch();
@@ -288,12 +288,12 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   $second = $enemy['name'];
   if ($myhod[0] != "") {
     include ("kartscript/" . $myhod[0] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[0] != "") {
     include ("kartscript/" . $enemyhod[0] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[1] != "") or ($enemyhod[1] != "")) {
     $log = $log . "<b>Второе действие</b> \n";
     $mov++;
@@ -302,12 +302,12 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   $second = $enemy['name'];
   if ($myhod[1] != "") {
     include ("kartscript/" . $myhod[1] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[1] != "") {
     include ("kartscript/" . $enemyhod[1] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[2] != "") or ($enemyhod[2] != "")) {
     $log = $log . "<b>Третье действие</b> \n";
     $mov++;
@@ -316,12 +316,12 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   $second = $enemy['name'];
   if ($myhod[2] != "") {
     include ("kartscript/" . $myhod[2] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[2] != "") {
     include ("kartscript/" . $enemyhod[2] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[3] != "") or ($enemyhod[3] != "")) {
     $log = $log . "<b>Четвертое действие</b> \n";
     $mov++;
@@ -330,12 +330,12 @@ if (($hod == 1) & ($my['Hod'] == 4)) {
   $second = $enemy['name'];
   if ($myhod[3] != "") {
     include ("kartscript/" . $myhod[3] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[3] != "") {
     include ("kartscript/" . $enemyhod[3] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($hend).AP.' WHERE id = '.$my['id'].' LIMIT 1;'); //контузия
   db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] .',`resultat` = '.AP.$my['resultat'].AP. ' WHERE id=' . $my['id'] . '  LIMIT 1;');
   db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] .',`resultat` = '.AP.$enemy['resultat'].AP. ' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
@@ -452,12 +452,12 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
   $second = $enemy['name'];
   if ($myhod[0] != "") {
     include ("kartscript/" . $myhod[0] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[0] != "") {
     include ("kartscript/" . $enemyhod[0] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[1] != "") or ($enemyhod[1] != "")) {
     $log = $log . "<b>Второе действие</b> \n";
     $mov++;
@@ -466,12 +466,12 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
   $second = $enemy['name'];
   if ($myhod[1] != "") {
     include ("kartscript/" . $myhod[1] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[1] != "") {
     include ("kartscript/" . $enemyhod[1] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[2] != "") or ($enemyhod[2] != "")) {
     $log = $log . "<b>Третье действие</b> \n";
     $mov++;
@@ -480,12 +480,12 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
   $second = $enemy['name'];
   if ($myhod[2] != "") {
     include ("kartscript/" . $myhod[2] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[2] != "") {
     include ("kartscript/" . $enemyhod[2] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   if (($myhod[3] != "") or ($enemyhod[3] != "")) {
     $log = $log . "<b>Четвертое действие</b> \n";
     $mov++;
@@ -494,12 +494,12 @@ if (($hod == 1) & ($my['Hod'] == 9)) {
   $second = $enemy['name'];
   if ($myhod[3] != "") {
     include ("kartscript/" . $myhod[3] . ".php");
-  }
+  }else{$my['resultat']=$my['resultat'].";";}
   $first = $enemy['name'];
   $second = $my['name'];
   if ($enemyhod[3] != "") {
     include ("kartscript/" . $enemyhod[3] . ".php");
-  }
+  }else{$enemy['resultat']=$enemy['resultat'].";";}
   db_query('UPDATE `Hend` SET `hend` = '.AP.serialize($hend).AP.' WHERE id = '.$my['id'].' LIMIT 1;'); //контузия
   db_query('UPDATE `game_user` SET `Carapina` = ' . $enemy['Carapina'] . ',`Legkoe` = ' . $enemy['Legkoe'] . ',`Srednee` = ' . $enemy['Srednee'] . ',`Tyageloe` = ' . $enemy['Tyageloe'] . ',`Smertelnoe` = ' . $enemy['Smertelnoe'] . ',`Smert` = ' . $enemy['Smert'] . ',`moddeystvie` = ' . $enemy['moddeystvie'] . ',`modranenie` = ' . $enemy['modranenie'] .',`resultat` = '.AP.$enemy['resultat'].AP.' WHERE id=' . $enemy['id'] . '  LIMIT 1;');
   db_query('UPDATE `game_user` SET `Carapina` = ' . $my['Carapina'] . ',`Legkoe` = ' . $my['Legkoe'] . ',`Srednee` = ' . $my['Srednee'] . ',`Tyageloe` = ' . $my['Tyageloe'] . ',`Smertelnoe` = ' . $my['Smertelnoe'] . ',`Smert` = ' . $my['Smert'] . ',`moddeystvie` = ' . $my['moddeystvie'] . ',`modranenie` = ' . $my['modranenie'] .',`resultat` = '.AP.$my['resultat'].AP. ' WHERE id=' . $my['id'] . '  LIMIT 1;');

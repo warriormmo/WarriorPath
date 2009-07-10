@@ -2,6 +2,7 @@
 if ($battle['dist'] == 2) {
   $log = $log . "Слишком далеко до противника. " . $first . " промахнулся, и теряет равновесие.\n"; // Проверка на дистанцию
   $enemy['moddeystvie']--;
+  $enemy['resultat']=$enemy['resultat']."2;";
 } else {
   $dopmoddist = 0;
   if ($battle['dist'] == 0) // слишком близко
@@ -25,6 +26,7 @@ if ($battle['dist'] == 2) {
   $log = $log . "На выполнение - " . $hit . " \n";
   if ($hit < 3) {
     $log = $log . $first . " не в состоянии выполнить удар " . $second . ". \n";
+    $enemy['resultat']=$enemy['resultat']."2;";
   } //условие вполнения удара
   else { // описание последствий удара
     $log = $log . $first . " бьет в плечо " . $second . ". \n";
@@ -52,11 +54,13 @@ if ($battle['dist'] == 2) {
       if ($mymodraneniya < $my['modranenie']) {
         $my['modranenie'] = $mymodraneniya;
         $log = $log . "Модификатор от раны:" . $mymodraneniya . "\n";
+       
       } //запись ранения
-      
+       $enemy['resultat']=$enemy['resultat']."1;";
     } else {
       $log = $log . $second . " отбил удар, а " . $first . " теряет равновесие \n";
       $enemy['moddeystvie']--;
+      $enemy['resultat']=$enemy['resultat']."2;";
     }
   }
 }
