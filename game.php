@@ -88,7 +88,7 @@ if (isset($_GET['del_battle'])) {
 }
 ?>
 
-
+<META HTTP-EQUIV="Refresh" CONTENT="20; URL='game.php' ">
 <body>
 
 
