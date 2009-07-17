@@ -22,6 +22,8 @@ $my = db_fetch();
 if (empty($my)) {
  redirect('index.html');
 }
+if ($my['reg'] ==0)
+{redirect('create.php');}
 // Обновляем время последнего посещения для пользователя
 db_query('UPDATE game_user SET lasttime=' . AP . time() . AP . ' WHERE id=' . $my['id'] . ' LIMIT 1;');
 //преход если был принят бой другим игроком

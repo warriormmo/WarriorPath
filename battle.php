@@ -16,6 +16,8 @@ $my = db_fetch();
 if (empty($my)) {
   redirect('index.html');
 }
+if ($my['reg'] ==0)
+{redirect('create.php');}
 ?>
 <!-- saved from url=(0013)about:internet -->
 <html lang="en">
@@ -60,7 +62,7 @@ if (AC_FL_RunContent == 0 || DetectFlashVer == 0) {
 			'align', 'middle',
 			'play', 'true',
 			'loop', 'true',
-			'scale', 'exactfit',
+			'scale', 'showall',
 			'wmode', 'window',
 			'devicefont', 'false',
 			'id', 'game',

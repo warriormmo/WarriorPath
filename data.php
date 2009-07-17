@@ -13,7 +13,7 @@ check_auth(); //проврка куков
 db_query('SELECT * FROM game_user WHERE userid=' . AP . $my['userid'] . AP . ' LIMIT 1;');
 $my = db_fetch();
 if (empty($my)) {
-  redirect('index.html');
+  goto_error_global('Пользователь не найден в базе!');
 }
 db_query('SELECT hend FROM Hend WHERE id=' . $my['id'] . ' ;');
 $hend = db_fetch();
@@ -201,7 +201,7 @@ if (($my['Hod'] == 0) & ($enemy['Hod'] == 0)) {
   }
   db_query('UPDATE `koloda` SET `koloda` = '.AP.serialize($arren).AP.'  WHERE id = ' . $enemy['id'] . ' LIMIT 1;');
   //конец сортировки карт!!!
-  
+  include("delmods.php"); //удаляем моды
 }
 //ФАЗА 1
 //Пропуск хода 1м игроком
