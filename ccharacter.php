@@ -25,7 +25,7 @@ case 2:
     db_query('UPDATE `game_user` SET `Sila` = "2",`Lovkost` = "3",`Mishlenie` = "3",`Obrazovanie` = "2" WHERE id = ' . $my['id'] . ' LIMIT 1;');
     break;
 case 3:
-    db_query('UPDATE `game_user` SET `Sila` = "2",`Lovkost` = "3",`Mishlenie` = "2",`Obrazovanie` = "2" WHERE id = ' . $my['id'] . ' LIMIT 1;');
+    db_query('UPDATE `game_user` SET `Sila` = "3",`Lovkost` = "3",`Mishlenie` = "2",`Obrazovanie` = "2" WHERE id = ' . $my['id'] . ' LIMIT 1;');
     break;
 case 4:
     db_query('UPDATE `game_user` SET `Sila` = "3",`Lovkost` = "2",`Mishlenie` = "3",`Obrazovanie` = "2" WHERE id = ' . $my['id'] . ' LIMIT 1;');

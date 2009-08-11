@@ -126,23 +126,23 @@ if (($my['Hod'] == 0) & ($enemy['Hod'] == 0)) {
   $ehend = db_fetch();
   $ehend = unserialize($ehend['hend']);
   $j = 0;
-  for ($i = 1; $i <= ($my['Obrazovanie'] * 3); $i++) {
+  for ($i = 1; $i <= ($my['Mishlenie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
       $j++;
     }
   }
-  $sbros = $enemy['Obrazovanie'] - (($my['Obrazovanie'] * 3) - $j);
+  $sbros = $enemy['Mishlenie'] - (($my['Mishlenie'] * 3) - $j);
   for ($i = 1; $i <= $sbros; $i++) {
     $ehend[$i] = "";
   }
   $j = 1;
-  for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
+  for ($i = 1; $i <= ($enemy['Mishlenie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
       $arren[$j] = $ehend[$i];
       $j++;
     }
   }
-  for ($i = 1; $i <= $my['Obrazovanie']; $i++) {
+  for ($i = 1; $i <= $my['Mishlenie']; $i++) {
     $arren[$j] = $koloda[rand(1, count($koloda)) ];
    // $koloda[$i]="";
     $j++;
@@ -168,23 +168,23 @@ if (($my['Hod'] == 0) & ($enemy['Hod'] == 0)) {
   $ehend = db_fetch();
   $ehend = unserialize($ehend['hend']);
   $j = 0;
-  for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
+  for ($i = 1; $i <= ($enemy['Mishlenie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
       $j++;
     }
   }
-  $sbros = $enemy['Obrazovanie'] - (($enemy['Obrazovanie'] * 3) - $j);
+  $sbros = $enemy['Mishlenie'] - (($enemy['Mishlenie'] * 3) - $j);
   for ($i = 1; $i <= $sbros; $i++) {
     $ehend[$i] = "";
   }
   $j = 1;
-  for ($i = 1; $i <= ($enemy['Obrazovanie'] * 3); $i++) {
+  for ($i = 1; $i <= ($enemy['Mishlenie'] * 3); $i++) {
     if ($ehend[$i] <> "") {
       $arren[$j] = $ehend[$i];
       $j++;
     }
   }
-  for ($i = 1; $i <= $enemy['Obrazovanie']; $i++) {
+  for ($i = 1; $i <= $enemy['Mishlenie']; $i++) {
     $arren[$j] = $koloda[rand(1, count($koloda)) ];
    // $koloda[$i]="";
     $j++;
@@ -546,7 +546,7 @@ db_query('SELECT * FROM Hend WHERE (id=' . $my['id'] . ') LIMIT 1;');
 $hend = db_fetch();
 $hend = unserialize($hend['hend']);
 echo "kart=";
-for ($i = 0; $i <= ($my['Obrazovanie'] * 3) + 1; $i++) {
+for ($i = 0; $i <= ($my['Mishlenie'] * 3) + 1; $i++) {
   if ($hend[$i] <> "") echo '' . $hend[$i] . ';';
 }
 echo "&hod=" . $my['Hod'];
@@ -560,7 +560,7 @@ echo "&myname=" . $my['name'];
 echo "&mysila=" . $my['Sila'];
 echo "&mylovkost=" . $my['Lovkost'];
 echo "&mymishlenie=" . $my['Mishlenie'];
-echo "&myobrazovanie=" . $my['Obrazovanie'];
+echo "&myMishlenie=" . $my['Mishlenie'];
 echo "&myimage=" . $my['image'];
 echo "&mycarapina=" . $my['Carapina'];
 echo "&mylegkoe=" . $my['Legkoe'];
@@ -577,7 +577,7 @@ echo "&enemyname=" . $enemy['name'];
 echo "&enemysila=" . $enemy['Sila'];
 echo "&enemylovkost=" . $enemy['Lovkost'];
 echo "&enemymishlenie=" . $enemy['Mishlenie'];
-echo "&enemyobrazovanie=" . $enemy['Obrazovanie'];
+echo "&enemyMishlenie=" . $enemy['Mishlenie'];
 echo "&enemyimage=" . $enemy['image'];
 echo "&enemycarapina=" . $enemy['Carapina'];
 echo "&enemylegkoe=" . $enemy['Legkoe'];
